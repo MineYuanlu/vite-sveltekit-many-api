@@ -1,8 +1,17 @@
 import path from 'node:path';
+import fs from 'node:fs';
 import { API_ROUTES_DIR, usesBody, GENERATED_MARKER, ESLINT_IGNORE_ALL } from '../../config.js';
 import { writeIfChanged } from '../../file-writer.js';
 import type { EndpointInfo } from '../../types.js';
 import type { StandardSchemaV1 } from '@standard-schema/spec';
+
+function resolveRealPath(p: string): string {
+	try {
+		return fs.realpathSync.native(p);
+	} catch {
+		return path.resolve(p);
+	}
+}
 
 /** OpenAPI 端点描述 */
 export interface ApiEndpoint {
@@ -18,7 +27,7 @@ export interface ApiEndpoint {
  * 生成 openapi-registry.server.ts 注册表文件
  */
 export async function generateOpenApiRegistry(endpoints: EndpointInfo[]) {
-	const apiDir = path.resolve(API_ROUTES_DIR);
+	const apiDir = resolveRealPath(path.resolve(API_ROUTES_DIR));
 	const registryPath = path.join(apiDir, 'openapi-registry.server.ts');
 
 	// 按路径排序
@@ -32,7 +41,7 @@ export async function generateOpenApiRegistry(endpoints: EndpointInfo[]) {
 		const prefix = `s${fileIdx}`;
 
 		// 计算相对于 src/routes/api/ 的 import 路径
-		const relPath = path.relative(apiDir, ep.filePath).replace(/\.ts$/, '');
+		const relPath = path.relative(apiDir, resolveRealPath(ep.filePath)).replace(/\.ts$/, '');
 		const importPath = './' + relPath.split(path.sep).join('/');
 
 		// 收集该文件的所有 import 项

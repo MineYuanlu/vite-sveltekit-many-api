@@ -12,6 +12,10 @@ export async function writeIfChanged(filePath: string, content: string): Promise
 			const existing = await fs.promises.readFile(filePath, 'utf-8');
 			if (existing === content) return false;
 		}
+		const dir = path.dirname(filePath);
+		if (!fs.existsSync(dir)) {
+			fs.mkdirSync(dir, { recursive: true });
+		}
 		await fs.promises.writeFile(filePath, content, 'utf-8');
 		return true;
 	} catch (err) {

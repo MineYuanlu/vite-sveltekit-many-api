@@ -1,9 +1,18 @@
 import path from 'node:path';
+import fs from 'node:fs';
 import { API_ROUTES_DIR, MCP_REGISTRY_FILE, GENERATED_MARKER, ESLINT_IGNORE_ALL } from '../../config.js';
 import { writeIfChanged } from '../../file-writer.js';
 import type { EndpointInfo } from '../../types.js';
 import type { StandardSchemaV1 } from '@standard-schema/spec';
 import type { ApiMethodDef } from '../../types.js';
+
+function resolveRealPath(p: string): string {
+	try {
+		return fs.realpathSync.native(p);
+	} catch {
+		return path.resolve(p);
+	}
+}
 
 /** MCP 工具描述 */
 export interface McpTool {
@@ -26,7 +35,7 @@ export interface McpTool {
  * 每个 tool 关联到对应的 API endpoint，并包含 MCP 配置（如 category、extraData）。
  */
 export async function generateMcpRegistry(endpoints: EndpointInfo[]) {
-	const apiDir = path.resolve(API_ROUTES_DIR);
+	const apiDir = resolveRealPath(path.resolve(API_ROUTES_DIR));
 	const registryPath = path.join(apiDir, MCP_REGISTRY_FILE);
 
 	// 按路径排序，保持生成结果稳定
@@ -40,7 +49,7 @@ export async function generateMcpRegistry(endpoints: EndpointInfo[]) {
 		const prefix = `s${fileIdx}`;
 
 		// 计算相对于 src/routes/api/ 的 import 路径
-		const relPath = path.relative(apiDir, ep.filePath).replace(/\.ts$/, '');
+		const relPath = path.relative(apiDir, resolveRealPath(ep.filePath)).replace(/\.ts$/, '');
 		const importPath = './' + relPath.split(path.sep).join('/');
 
 		// 收集该文件的所有 import 项
