@@ -1,0 +1,67 @@
+{
+	"name": "@yuanlu_yl/vite-sveltekit-many-api",
+	"version": "0.1.0",
+	"description": "Vite plugin for SvelteKit to auto-generate API routes from `-api.server.ts` files with OpenAPI and MCP registry support",
+	"type": "module",
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "tsup src/index.ts --format cjs,esm --dts --clean",
+		"dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+		"test": "vitest",
+		"test:run": "vitest run",
+		"typecheck": "tsc --noEmit",
+		"lint": "eslint src --ext .ts",
+		"format": "prettier --write .",
+		"format:check": "prettier --check .",
+		"prepublishOnly": "npm run build"
+	},
+	"keywords": [
+		"vite",
+		"plugin",
+		"sveltekit",
+		"api",
+		"routes",
+		"openapi",
+		"mcp",
+		"server"
+	],
+	"author": "yuanlu",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/MineYuanlu/vite-sveltekit-many-api.git"
+	},
+	"bugs": {
+		"url": "https://github.com/MineYuanlu/vite-sveltekit-many-api/issues"
+	},
+	"homepage": "https://github.com/MineYuanlu/vite-sveltekit-many-api#readme",
+	"peerDependencies": {
+		"vite": "^5.0.0 || ^6.0.0"
+	},
+	"devDependencies": {
+		"@types/node": "^22.0.0",
+		"prettier": "^3.8.3",
+		"tsup": "^8.0.0",
+		"typescript": "^5.7.0",
+		"vite": "^6.0.0",
+		"vitest": "^3.0.0"
+	},
+	"dependencies": {
+		"es-module-lexer": "^1.6.0"
+	},
+	"engines": {
+		"node": ">=18.0.0"
+	}
+}

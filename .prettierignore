@@ -1,0 +1,10 @@
+# Ignore artifacts:
+dist
+coverage
+node_modules
+
+# Ignore all HTML files:
+*.html
+
+# Ignore package lock
+package-lock.json
