@@ -22,7 +22,8 @@
 		"test": "vitest",
 		"test:run": "vitest run",
 		"typecheck": "tsc --noEmit",
-		"lint": "eslint src --ext .ts",
+		"lint": "eslint src test",
+		"lint:fix": "eslint src test --fix",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"prepublishOnly": "npm run build"
@@ -52,11 +53,14 @@
 		"vite": "^5.0.0 || ^6.0.0"
 	},
 	"devDependencies": {
+		"@eslint/js": "^10.0.1",
 		"@standard-schema/spec": "^1.1.0",
 		"@types/node": "^22.0.0",
+		"eslint": "^10.4.0",
 		"prettier": "^3.8.3",
 		"tsup": "^8.0.0",
 		"typescript": "^5.7.0",
+		"typescript-eslint": "^8.59.3",
 		"vite": "^6.0.0",
 		"vitest": "^3.0.0"
 	},

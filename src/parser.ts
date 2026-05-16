@@ -18,7 +18,7 @@ import type { HttpMethod } from './config.js';
 export async function parseApiExports(filePath: string): Promise<MethodInfo[]> {
 	const content = await fs.promises.readFile(filePath, 'utf-8');
 	await init;
-	const [_, exports] = parse(content);
+	const [, exports] = parse(content);
 	const exportNames = new Set(exports.map((exp) => exp.n));
 
 	const methods: MethodInfo[] = [];

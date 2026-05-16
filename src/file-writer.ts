@@ -63,8 +63,8 @@ export async function ensureUtilTemplate(util: UtilConfig): Promise<void> {
 		if (globalDir) {
 			pkgRoot = path.resolve(globalDir, '..');
 		} else {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const metaUrl = (globalThis as any).import?.meta?.url as string | undefined;
+			// ESM 模式：通过 import.meta.url 定位
+			const metaUrl = (globalThis as unknown as { import?: { meta?: { url?: string } } }).import?.meta?.url;
 			if (metaUrl) {
 				pkgRoot = path.resolve(path.dirname(new URL(metaUrl).pathname), '..');
 			}

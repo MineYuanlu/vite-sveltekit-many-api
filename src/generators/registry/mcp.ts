@@ -64,20 +64,20 @@ export async function generateMcpRegistry(endpoints: EndpointInfo[]) {
 			const schemaValue = m.hasSchema ? `${prefix}_z${m.method}` : 'undefined';
 
 			const dMethodRef = m.description !== undefined || m.mcp !== undefined ? `${prefix}_d${m.method}` : 'undefined';
-			entryLines.push(`  {`);
+			entryLines.push('  {');
 			entryLines.push(`    name: '${operationId}',`);
 			entryLines.push(`    inputSchema: ${schemaValue},`);
 			entryLines.push(`    apiEndpoint: { path: '${ep.apiUrl}', method: '${m.method}' },`);
 			entryLines.push(`    handler: ${handler},`);
 			entryLines.push(`    definition: ${dMethodRef},`);
-			entryLines.push(`  },`);
+			entryLines.push('  },');
 		}
 	}
 
 	const lines: string[] = [];
 	lines.push(GENERATED_MARKER.trimEnd());
 	lines.push(ESLINT_IGNORE_ALL.trimEnd());
-	lines.push(`import type { McpTool } from '@yuanlu_yl/vite-sveltekit-many-api';`);
+	lines.push('import type { McpTool } from \'@yuanlu_yl/vite-sveltekit-many-api\';');
 	for (const imp of importLines) lines.push(imp);
 	lines.push('');
 	lines.push('export const mcpTools: McpTool[] = [');

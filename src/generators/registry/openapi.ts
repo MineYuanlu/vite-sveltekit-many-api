@@ -51,21 +51,21 @@ export async function generateOpenApiRegistry(endpoints: EndpointInfo[]) {
 			const descriptionValue = m.description !== undefined ? `${prefix}_d${m.method}.description` : 'undefined';
 			const schemaValue = m.hasSchema ? `${prefix}_z${m.method}` : 'undefined';
 
-			entryLines.push(`  {`);
+			entryLines.push('  {');
 			entryLines.push(`    path: '${ep.apiUrl}',`);
 			entryLines.push(`    method: '${m.method}',`);
 			entryLines.push(`    operationId: '${operationId}',`);
 			entryLines.push(`    description: ${descriptionValue},`);
 			entryLines.push(`    schema: ${schemaValue},`);
 			entryLines.push(`    usesBody: ${usesBody(m.method)},`);
-			entryLines.push(`  },`);
+			entryLines.push('  },');
 		}
 	}
 
 	const lines: string[] = [];
 	lines.push(GENERATED_MARKER.trimEnd());
 	lines.push(ESLINT_IGNORE_ALL.trimEnd());
-	lines.push(`import type { ApiEndpoint } from '@yuanlu_yl/vite-sveltekit-many-api';`);
+	lines.push('import type { ApiEndpoint } from \'@yuanlu_yl/vite-sveltekit-many-api\';');
 	for (const imp of importLines) lines.push(imp);
 	lines.push('');
 	lines.push('export const endpoints: ApiEndpoint[] = [');

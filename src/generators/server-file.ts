@@ -30,7 +30,7 @@ export function generateServerFile(apiFileName: string, methods: EndpointInfo['m
 	if (needsBody) parseImports.push('parseBody');
 	if (needsParams) parseImports.push('parseSearchParams');
 
-	lines.push(`import type { RequestHandler } from './$types';`);
+	lines.push('import type { RequestHandler } from \'./$types.js\';');
 	lines.push(`import { ${parseImports.join(', ')} } from '${utilImportPath}';`);
 	lines.push(`import { ${apiImportItems.join(', ')} } from './${apiFileName}';`);
 
@@ -41,13 +41,13 @@ export function generateServerFile(apiFileName: string, methods: EndpointInfo['m
 			lines.push(`export const ${method}: RequestHandler = async () => {`);
 			lines.push(`\tconst params = await ${parser}(z${method});`);
 			lines.push(`\tconst data = await _${method}(params);`);
-			lines.push(`\treturn success({ data });`);
-			lines.push(`};`);
+			lines.push('\treturn success({ data });');
+			lines.push('};');
 		} else {
 			lines.push(`export const ${method}: RequestHandler = async () => {`);
 			lines.push(`\tconst data = await _${method}();`);
-			lines.push(`\treturn success({ data });`);
-			lines.push(`};`);
+			lines.push('\treturn success({ data });');
+			lines.push('};');
 		}
 	}
 
