@@ -39,6 +39,52 @@ Currently supports the above four auto-generated file types out of the box, but 
 - 🔄 File watching with hot reload in development mode
 - 🛡️ Safe generation (won't overwrite user files)
 
+## Playground
+
+The project includes a `playground/` directory at the root, which is a minimal SvelteKit test environment for quickly validating plugin functionality.
+
+### Setup Steps
+
+Since the plugin itself needs to be built before it can be used by the playground, **you must build the plugin first, then build/start the playground**:
+
+```bash
+# 1. Build the plugin at project root
+npm run build
+
+# 2. Install playground dependencies (first time only)
+cd playground
+npm install
+
+# 3. Start the playground dev server
+npm run dev
+```
+
+### Playground Structure
+
+```
+playground/
+├── src/routes/api/           # API routes directory
+│   ├── hello-api.server.ts   # Example API endpoint
+│   ├── openapi-registry.server.ts   # Generated OpenAPI registry
+│   └── mcp-registry.server.ts       # Generated MCP registry
+└── vite.config.ts            # Pre-configured with apiRoutes() plugin
+```
+
+### Adding Test Endpoints
+
+Create files ending with `-api.server.ts` in `playground/src/routes/api/` to trigger auto-generation. For example:
+
+```typescript
+// playground/src/routes/api/test-api.server.ts
+export async function GET() {
+	return { message: 'Hello from playground!' };
+}
+```
+
+After saving, the plugin will automatically generate the corresponding `+server.ts` and registry files.
+
+---
+
 ## Installation
 
 ```bash

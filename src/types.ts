@@ -1,4 +1,16 @@
-import type { HttpMethod } from './config';
+import type { HttpMethod } from './config.js';
+import type { StandardSchemaV1 } from '@standard-schema/spec';
+
+/** API 路由中 `dMETHOD` 导出的元数据对象 */
+export interface ApiMethodDef {
+	/** 端点描述（用于 OpenAPI 和 MCP） */
+	description?: string;
+	/** MCP 专属配置 */
+	mcp?: {
+		/** 工具注释 */
+		annotations?: Record<string, unknown>;
+	};
+}
 
 export interface MethodInfo {
 	method: HttpMethod;
@@ -22,3 +34,6 @@ export interface EndpointInfo {
 	apiUrl: string;
 	methods: MethodInfo[];
 }
+
+/** 重新导出 StandardSchemaV1 供用户使用 */
+export type { StandardSchemaV1 };

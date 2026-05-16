@@ -2,6 +2,17 @@ import path from 'node:path';
 import { API_ROUTES_DIR, usesBody, GENERATED_MARKER, ESLINT_IGNORE_ALL } from '../../config.js';
 import { writeIfChanged } from '../../file-writer.js';
 import type { EndpointInfo } from '../../types.js';
+import type { StandardSchemaV1 } from '@standard-schema/spec';
+
+/** OpenAPI 端点描述 */
+export interface ApiEndpoint {
+	path: string;
+	method: string;
+	operationId: string;
+	description?: string;
+	schema?: StandardSchemaV1;
+	usesBody: boolean;
+}
 
 /**
  * 生成 openapi-registry.server.ts 注册表文件
@@ -54,17 +65,8 @@ export async function generateOpenApiRegistry(endpoints: EndpointInfo[]) {
 	const lines: string[] = [];
 	lines.push(GENERATED_MARKER.trimEnd());
 	lines.push(ESLINT_IGNORE_ALL.trimEnd());
-	lines.push(`import type z from 'zod';`);
+	lines.push(`import type { ApiEndpoint } from '@yuanlu_yl/vite-sveltekit-many-api';`);
 	for (const imp of importLines) lines.push(imp);
-	lines.push('');
-	lines.push('export interface ApiEndpoint {');
-	lines.push('  path: string;');
-	lines.push('  method: string;');
-	lines.push('  operationId: string;');
-	lines.push('  description?: string;');
-	lines.push('  schema?: z.ZodType;');
-	lines.push('  usesBody: boolean;');
-	lines.push('}');
 	lines.push('');
 	lines.push('export const endpoints: ApiEndpoint[] = [');
 	for (const entry of entryLines) lines.push(entry);

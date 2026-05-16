@@ -5,12 +5,17 @@ import { setupWatcher } from './watcher.js';
 import { generateRegistryFiles } from './generators/registry/index.js';
 import type { EndpointInfo } from './types.js';
 
+// 导出类型定义供用户项目使用
+export type { ApiMethodDef, StandardSchemaV1 } from './types.js';
+export type { ApiEndpoint } from './generators/registry/openapi.js';
+export type { McpTool } from './generators/registry/mcp.js';
+
 export function apiRoutes(): Plugin {
 	// 维护所有端点的内存状态，用于增量更新注册表
 	const allEndpoints = new Map<string, EndpointInfo>();
 
 	return {
-		name: 'vite-plugin-api-routes',
+		name: '@yuanlu_yl/vite-sveltekit-many-api',
 		async buildStart() {
 			// 构建时全量扫描
 			console.log(`${LOG_PREFIX} 构建模式：扫描 API 文件...`);

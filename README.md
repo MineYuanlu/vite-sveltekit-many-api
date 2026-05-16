@@ -39,6 +39,52 @@
 - 🔄 开发模式文件监听与热更新
 - 🛡️ 安全生成(不会覆盖用户文件)
 
+## Playground
+
+项目根目录下包含一个 `playground/` 目录，是一个最小化的 SvelteKit 测试环境，用于快速验证插件功能。
+
+### 启动步骤
+
+由于插件本身需要构建后才能被 playground 使用，**必须先构建插件，再构建/启动 playground**：
+
+```bash
+# 1. 先在项目根目录构建插件
+npm run build
+
+# 2. 进入 playground 安装依赖（首次）
+cd playground
+npm install
+
+# 3. 启动 playground 开发服务器
+npm run dev
+```
+
+### playground 结构
+
+```
+playground/
+├── src/routes/api/           # API 路由目录
+│   ├── hello-api.server.ts   # 示例 API 端点
+│   ├── openapi-registry.server.ts   # 生成的 OpenAPI 注册表
+│   └── mcp-registry.server.ts       # 生成的 MCP 注册表
+└── vite.config.ts            # 已配置 apiRoutes() 插件
+```
+
+### 添加测试端点
+
+在 `playground/src/routes/api/` 下创建以 `-api.server.ts` 结尾的文件即可自动触发生成。例如：
+
+```typescript
+// playground/src/routes/api/test-api.server.ts
+export async function GET() {
+	return { message: 'Hello from playground!' };
+}
+```
+
+保存后插件会自动生成对应的 `+server.ts` 和注册表文件。
+
+---
+
 ## 安装
 
 ```bash

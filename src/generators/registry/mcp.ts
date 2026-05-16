@@ -2,6 +2,22 @@ import path from 'node:path';
 import { API_ROUTES_DIR, MCP_REGISTRY_FILE, GENERATED_MARKER, ESLINT_IGNORE_ALL } from '../../config.js';
 import { writeIfChanged } from '../../file-writer.js';
 import type { EndpointInfo } from '../../types.js';
+import type { StandardSchemaV1 } from '@standard-schema/spec';
+import type { ApiMethodDef } from '../../types.js';
+
+/** MCP 工具描述 */
+export interface McpTool {
+	/** 工具名称 */
+	name: string;
+	/** 工具输入的标准 Schema 类型 */
+	inputSchema?: StandardSchemaV1;
+	/** 路径信息 */
+	apiEndpoint: { path: string; method: string };
+	/** 处理函数 */
+	handler: (args: any) => Promise<unknown>;
+	/** 接口配置 */
+	definition?: ApiMethodDef;
+}
 
 /**
  * 生成 mcp-registry.server.ts 注册表文件
@@ -61,22 +77,8 @@ export async function generateMcpRegistry(endpoints: EndpointInfo[]) {
 	const lines: string[] = [];
 	lines.push(GENERATED_MARKER.trimEnd());
 	lines.push(ESLINT_IGNORE_ALL.trimEnd());
-	lines.push(`import type z from 'zod';`);
+	lines.push(`import type { McpTool } from '@yuanlu_yl/vite-sveltekit-many-api';`);
 	for (const imp of importLines) lines.push(imp);
-	lines.push('');
-	lines.push('/** MCP 工具描述 */');
-	lines.push('export interface McpTool {');
-	lines.push('  /** 工具名称 */');
-	lines.push('  name: string;');
-	lines.push('  /** 工具输入的zod类型, 推荐为ZodObject类型 */');
-	lines.push('  inputSchema?: z.ZodType;');
-	lines.push('  /** 路径信息 */');
-	lines.push('  apiEndpoint: { path: string; method: string };');
-	lines.push('  /** 处理函数 */');
-	lines.push('  handler: (args: any) => Promise<unknown>;');
-	lines.push('  /** 接口配置 */');
-	lines.push('  definition?: App.ApiMethodDef;');
-	lines.push('}');
 	lines.push('');
 	lines.push('export const mcpTools: McpTool[] = [');
 	for (const entry of entryLines) lines.push(entry);
