@@ -1,17 +1,9 @@
 import path from 'node:path';
-import fs from 'node:fs';
 import { API_ROUTES_DIR, usesBody, GENERATED_MARKER, ESLINT_IGNORE_ALL } from '../../config.js';
 import { writeIfChanged } from '../../file-writer.js';
+import { resolveRealPath } from '../../path-utils.js';
 import type { EndpointInfo } from '../../types.js';
 import type { StandardSchemaV1 } from '@standard-schema/spec';
-
-function resolveRealPath(p: string): string {
-	try {
-		return fs.realpathSync.native(p);
-	} catch {
-		return path.resolve(p);
-	}
-}
 
 /** OpenAPI 端点描述 */
 export interface ApiEndpoint {

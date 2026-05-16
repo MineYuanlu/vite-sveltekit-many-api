@@ -2,11 +2,15 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { API_ROUTES_DIR } from './config.js';
 
-function resolveRealPath(p: string): string {
+export function resolveRealPath(p: string): string {
 	try {
 		return fs.realpathSync.native(p);
-	} catch {
-		return path.resolve(p);
+	} catch (err) {
+		const code = (err as NodeJS.ErrnoException).code;
+		if (code === 'ENOENT') {
+			return path.resolve(p);
+		}
+		throw err;
 	}
 }
 

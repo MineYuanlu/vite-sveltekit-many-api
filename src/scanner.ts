@@ -4,6 +4,7 @@ import { API_ROUTES_DIR, API_NAME, DEFAULT_UTIL_CONFIG } from './config.js';
 import type { UtilConfig } from './config.js';
 import { processServerFile } from './generators/server-file.js';
 import { processRemoteFile } from './generators/remote-file.js';
+import { resolveRealPath } from './path-utils.js';
 import type { EndpointInfo } from './types.js';
 
 /**
@@ -11,7 +12,7 @@ import type { EndpointInfo } from './types.js';
  * @returns 所有有效的端点信息
  */
 export function scanAllApiFiles(): string[] {
-	const watchDir = path.resolve(API_ROUTES_DIR);
+	const watchDir = resolveRealPath(path.resolve(API_ROUTES_DIR));
 	if (!fs.existsSync(watchDir)) return [];
 
 	const files: string[] = [];
@@ -21,7 +22,7 @@ export function scanAllApiFiles(): string[] {
 			if (entry.isDirectory()) {
 				walkDir(full);
 			} else if (entry.isFile() && path.basename(entry.name) === API_NAME) {
-				files.push(full);
+				files.push(resolveRealPath(full));
 			}
 		}
 	}

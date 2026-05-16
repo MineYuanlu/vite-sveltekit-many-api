@@ -4,11 +4,12 @@ import type { UtilConfig } from './config.js';
 import { removeGeneratedFile } from './file-writer.js';
 import { processApiFile } from './scanner.js';
 import { generateRegistryFiles } from './generators/registry/index.js';
+import { resolveRealPath } from './path-utils.js';
 import type { EndpointInfo } from './types.js';
 import type { ViteDevServer } from 'vite';
 
 export function setupWatcher(server: ViteDevServer, allEndpoints: Map<string, EndpointInfo>, util: UtilConfig = DEFAULT_UTIL_CONFIG) {
-	const resolvedApiDir = path.resolve(API_ROUTES_DIR);
+	const resolvedApiDir = resolveRealPath(path.resolve(API_ROUTES_DIR));
 
 	let registryDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 	let registryDirty = false;

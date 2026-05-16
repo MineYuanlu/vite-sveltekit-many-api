@@ -8,14 +8,16 @@ import { GENERATED_MARKER, LOG_PREFIX, type UtilConfig } from './config.js';
  */
 export async function writeIfChanged(filePath: string, content: string): Promise<boolean> {
 	try {
-		if (fs.existsSync(filePath)) {
-			const existing = await fs.promises.readFile(filePath, 'utf-8');
-			if (existing === content) return false;
+		let existing: string | undefined;
+		try {
+			existing = await fs.promises.readFile(filePath, 'utf-8');
+		} catch (e) {
+			if ((e as NodeJS.ErrnoException).code !== 'ENOENT') throw e;
 		}
+		if (existing === content) return false;
+
 		const dir = path.dirname(filePath);
-		if (!fs.existsSync(dir)) {
-			fs.mkdirSync(dir, { recursive: true });
-		}
+		await fs.promises.mkdir(dir, { recursive: true });
 		await fs.promises.writeFile(filePath, content, 'utf-8');
 		return true;
 	} catch (err) {
@@ -102,9 +104,7 @@ export async function ensureUtilTemplate(util: UtilConfig): Promise<void> {
 	try {
 		const content = await fs.promises.readFile(templatePath, 'utf-8');
 		const targetDir = path.dirname(targetPath);
-		if (!fs.existsSync(targetDir)) {
-			fs.mkdirSync(targetDir, { recursive: true });
-		}
+		await fs.promises.mkdir(targetDir, { recursive: true });
 		await fs.promises.writeFile(targetPath, content, 'utf-8');
 		console.log(`${LOG_PREFIX} 已创建 util 模板: ${path.relative(process.cwd(), targetPath)}`);
 	} catch (err) {

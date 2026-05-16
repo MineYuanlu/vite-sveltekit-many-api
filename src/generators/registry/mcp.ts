@@ -1,18 +1,10 @@
 import path from 'node:path';
-import fs from 'node:fs';
 import { API_ROUTES_DIR, MCP_REGISTRY_FILE, GENERATED_MARKER, ESLINT_IGNORE_ALL } from '../../config.js';
 import { writeIfChanged } from '../../file-writer.js';
+import { resolveRealPath } from '../../path-utils.js';
 import type { EndpointInfo } from '../../types.js';
 import type { StandardSchemaV1 } from '@standard-schema/spec';
 import type { ApiMethodDef } from '../../types.js';
-
-function resolveRealPath(p: string): string {
-	try {
-		return fs.realpathSync.native(p);
-	} catch {
-		return path.resolve(p);
-	}
-}
 
 /** MCP 工具描述 */
 export interface McpTool {
