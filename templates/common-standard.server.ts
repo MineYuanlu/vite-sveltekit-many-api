@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { error, json } from '@sveltejs/kit';
 import { getRequestEvent } from '$app/server';
 import type { StandardSchemaV1 } from '@standard-schema/spec';

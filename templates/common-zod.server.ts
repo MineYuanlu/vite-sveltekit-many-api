@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { error, json } from '@sveltejs/kit';
 import { getRequestEvent } from '$app/server';
 import z from 'zod';

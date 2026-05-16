@@ -73,9 +73,8 @@ export async function ensureUtilTemplate(util: UtilConfig): Promise<void> {
 
 	const searchDirs: string[] = [];
 	if (pkgRoot) {
-		searchDirs.push(path.resolve(pkgRoot, 'templates'));
 		searchDirs.push(path.resolve(pkgRoot, 'dist', 'templates'));
-		searchDirs.push(path.resolve(pkgRoot, 'src', 'templates'));
+		searchDirs.push(path.resolve(pkgRoot, 'templates'));
 	}
 	// fallback：尝试从当前工作目录向上查找（适用于 monorepo 等场景）
 	searchDirs.push(path.resolve(process.cwd(), 'templates'));
