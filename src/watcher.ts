@@ -1,12 +1,13 @@
 import path from 'node:path';
-import { API_ROUTES_DIR, API_NAME, LOG_PREFIX, SERVER_FILE, REMOTE_FILE } from './config.js';
+import { API_ROUTES_DIR, API_NAME, LOG_PREFIX, SERVER_FILE, REMOTE_FILE, DEFAULT_UTIL_CONFIG } from './config.js';
+import type { UtilConfig } from './config.js';
 import { removeGeneratedFile } from './file-writer.js';
 import { processApiFile } from './scanner.js';
 import { generateRegistryFiles } from './generators/registry/index.js';
 import type { EndpointInfo } from './types.js';
 import type { ViteDevServer } from 'vite';
 
-export function setupWatcher(server: ViteDevServer, allEndpoints: Map<string, EndpointInfo>) {
+export function setupWatcher(server: ViteDevServer, allEndpoints: Map<string, EndpointInfo>, util: UtilConfig = DEFAULT_UTIL_CONFIG) {
 	const resolvedApiDir = path.resolve(API_ROUTES_DIR);
 
 	let registryDebounceTimer: ReturnType<typeof setTimeout> | null = null;
@@ -36,7 +37,7 @@ export function setupWatcher(server: ViteDevServer, allEndpoints: Map<string, En
 		console.log(`${LOG_PREFIX} 检测到文件变更: ${path.relative(process.cwd(), filePath)}`);
 
 		// 独立文件：立即生成
-		const ep = await processApiFile(filePath);
+		const ep = await processApiFile(filePath, util);
 		if (ep) {
 			allEndpoints.set(filePath, ep);
 		} else {

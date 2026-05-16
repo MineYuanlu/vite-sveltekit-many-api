@@ -1,7 +1,7 @@
 {
 	"name": "@yuanlu_yl/vite-sveltekit-many-api",
 	"version": "0.1.0",
-	"description": "Vite plugin for SvelteKit to auto-generate API routes from `-api.server.ts` files with OpenAPI and MCP registry support",
+	"description": "Vite plugin for SvelteKit to auto-generate many API routes from `-api.server.ts`",
 	"type": "module",
 	"main": "./dist/index.cjs",
 	"module": "./dist/index.js",
@@ -17,7 +17,7 @@
 		"dist"
 	],
 	"scripts": {
-		"build": "tsup src/index.ts --format cjs,esm --dts --clean",
+		"build": "tsup src/index.ts --format cjs,esm --dts --clean && rm -rf dist/templates && cp -r src/templates dist/templates",
 		"dev": "tsup src/index.ts --format cjs,esm --dts --watch",
 		"test": "vitest",
 		"test:run": "vitest run",

@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { API_ROUTES_DIR, API_NAME } from './config.js';
+import { API_ROUTES_DIR, API_NAME, DEFAULT_UTIL_CONFIG } from './config.js';
+import type { UtilConfig } from './config.js';
 import { processServerFile } from './generators/server-file.js';
 import { processRemoteFile } from './generators/remote-file.js';
 import type { EndpointInfo } from './types.js';
@@ -31,9 +32,9 @@ export function scanAllApiFiles(): string[] {
 /**
  * 处理单个 API 文件：生成 server-file 和 remote-file。
  */
-export async function processApiFile(filePath: string): Promise<EndpointInfo | undefined> {
+export async function processApiFile(filePath: string, util: UtilConfig = DEFAULT_UTIL_CONFIG): Promise<EndpointInfo | undefined> {
 	// 并行生成 server 和 remote 文件
-	const [serverEp] = await Promise.all([processServerFile(filePath), processRemoteFile(filePath)]);
+	const [serverEp] = await Promise.all([processServerFile(filePath, util), processRemoteFile(filePath)]);
 
 	return serverEp;
 }
@@ -41,11 +42,11 @@ export async function processApiFile(filePath: string): Promise<EndpointInfo | u
 /**
  * 全量扫描并处理所有 API 文件。
  */
-export async function scanAll(): Promise<EndpointInfo[]> {
+export async function scanAll(util: UtilConfig = DEFAULT_UTIL_CONFIG): Promise<EndpointInfo[]> {
 	const files = scanAllApiFiles();
 
 	// 并发处理文件，错误隔离
-	const results = await Promise.all(files.map((file) => processApiFile(file)));
+	const results = await Promise.all(files.map((file) => processApiFile(file, util)));
 	const endpoints = results.filter((ep): ep is EndpointInfo => ep !== undefined);
 
 	return endpoints;

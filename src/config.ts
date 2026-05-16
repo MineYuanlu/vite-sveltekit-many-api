@@ -33,3 +33,26 @@ export const LOG_PREFIX = '[api-routes]';
 export function usesBody(method: HttpMethod): boolean {
 	return method === 'POST' || method === 'PUT' || method === 'PATCH';
 }
+
+/** util 配置类型 */
+export interface UtilConfig {
+	/** 模板文件复制检测路径（为 null/undefined 时不做复制检测） */
+	path?: string | null;
+	/** 生成代码中的导入路径 */
+	imp?: string;
+	/** schema 模式：'standard'（默认）或 'zod' */
+	schema?: 'standard' | 'zod';
+}
+
+/** 默认 util 配置 */
+export const DEFAULT_UTIL_CONFIG: Required<Pick<UtilConfig, 'imp' | 'schema'>> &
+	Pick<UtilConfig, 'path'> = {
+	path: 'src/lib/api/common.server.ts',
+	imp: '$lib/api/common.server.ts',
+	schema: 'standard',
+};
+
+/** 插件完整配置 */
+export interface ApiRoutesConfig {
+	util?: UtilConfig;
+}

@@ -1,4 +1,5 @@
-import { GENERATED_MARKER, ESLINT_IGNORE_ALL, SERVER_FILE, usesBody, LOG_PREFIX, API_NAME } from '../config.js';
+import { GENERATED_MARKER, ESLINT_IGNORE_ALL, SERVER_FILE, usesBody, LOG_PREFIX, API_NAME, DEFAULT_UTIL_CONFIG } from '../config.js';
+import type { UtilConfig } from '../config.js';
 import { writeIfChanged, removeGeneratedFile } from '../file-writer.js';
 import { getRoutePath, getApiUrlPath } from '../path-utils.js';
 import { parseApiExports } from '../parser.js';
@@ -12,7 +13,7 @@ import fs from 'node:fs';
  * GET/DELETE — 通过 `parseSearchParams` 解析查询参数。
  * POST/PUT/PATCH — 通过 `parseBody` 解析请求体。
  */
-export function generateServerFile(apiFileName: string, methods: EndpointInfo['methods']): string {
+export function generateServerFile(apiFileName: string, methods: EndpointInfo['methods'], utilImportPath: string): string {
 	const lines: string[] = [];
 
 	// 构建导入项：将处理函数别名为 _GET、_POST 等以避免命名冲突
@@ -30,7 +31,7 @@ export function generateServerFile(apiFileName: string, methods: EndpointInfo['m
 	if (needsParams) parseImports.push('parseSearchParams');
 
 	lines.push(`import type { RequestHandler } from './$types';`);
-	lines.push(`import { ${parseImports.join(', ')} } from '$api/common.server';`);
+	lines.push(`import { ${parseImports.join(', ')} } from '${utilImportPath}';`);
 	lines.push(`import { ${apiImportItems.join(', ')} } from './${apiFileName}';`);
 
 	for (const { method, hasSchema } of methods) {
@@ -57,7 +58,7 @@ export function generateServerFile(apiFileName: string, methods: EndpointInfo['m
  * 处理单个 `-api.server.ts` 文件：生成 `+server.ts`。
  * 如果没有导出任何 METHOD，则删除已有的生成文件。
  */
-export async function processServerFile(filePath: string): Promise<EndpointInfo | undefined> {
+export async function processServerFile(filePath: string, util: UtilConfig = DEFAULT_UTIL_CONFIG): Promise<EndpointInfo | undefined> {
 	const dir = path.dirname(filePath);
 	const basename = path.basename(filePath);
 
@@ -90,9 +91,11 @@ export async function processServerFile(filePath: string): Promise<EndpointInfo 
 		}
 	}
 
+	const utilImportPath = util.imp ?? DEFAULT_UTIL_CONFIG.imp;
+
 	let serverContent: string;
 	try {
-		serverContent = generateServerFile(apiFileName, methods);
+		serverContent = generateServerFile(apiFileName, methods, utilImportPath);
 	} catch (err) {
 		console.error(`${LOG_PREFIX} 生成内容失败 ${filePath}:`, err);
 		return undefined;
