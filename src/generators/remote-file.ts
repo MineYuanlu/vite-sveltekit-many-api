@@ -1,5 +1,5 @@
 import { GENERATED_MARKER, ESLINT_IGNORE_ALL, REMOTE_FILE, API_NAME, LOG_PREFIX } from '../config.js';
-import { writeIfChanged, removeGeneratedFile } from '../file-writer.js';
+import { writeIfChanged, removeGeneratedFile, syncEndpointGitignore } from '../file-writer.js';
 import { getRoutePath } from '../path-utils.js';
 import { parseApiExports } from '../parser.js';
 import type { EndpointInfo } from '../types.js';
@@ -70,6 +70,7 @@ export async function processRemoteFile(filePath: string): Promise<void> {
 	// 没有导出任何 METHOD 时，删除已有的生成文件
 	if (methods.length === 0) {
 		await removeGeneratedFile(remotePath);
+		await syncEndpointGitignore(dir);
 		return;
 	}
 
@@ -91,4 +92,5 @@ export async function processRemoteFile(filePath: string): Promise<void> {
 	}
 
 	await writeIfChanged(remotePath, remoteContent);
+	await syncEndpointGitignore(dir);
 }

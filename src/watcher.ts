@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { API_ROUTES_DIR, API_NAME, LOG_PREFIX, SERVER_FILE, REMOTE_FILE, DEFAULT_UTIL_CONFIG } from './config.js';
 import type { UtilConfig } from './config.js';
-import { removeGeneratedFile } from './file-writer.js';
+import { removeGeneratedFile, syncEndpointGitignore } from './file-writer.js';
 import { processApiFile } from './scanner.js';
 import { generateRegistryFiles } from './generators/registry/index.js';
 import { resolveRealPath } from './path-utils.js';
@@ -60,6 +60,7 @@ export function setupWatcher(server: ViteDevServer, allEndpoints: Map<string, En
 
 		await removeGeneratedFile(serverPath);
 		await removeGeneratedFile(remotePath);
+		await syncEndpointGitignore(dir);
 
 		allEndpoints.delete(filePath);
 		scheduleRegistryUpdate();

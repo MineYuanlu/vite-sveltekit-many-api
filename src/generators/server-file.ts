@@ -1,6 +1,6 @@
 import { GENERATED_MARKER, ESLINT_IGNORE_ALL, SERVER_FILE, usesBody, LOG_PREFIX, API_NAME, DEFAULT_UTIL_CONFIG } from '../config.js';
 import type { UtilConfig } from '../config.js';
-import { writeIfChanged, removeGeneratedFile } from '../file-writer.js';
+import { writeIfChanged, removeGeneratedFile, syncEndpointGitignore } from '../file-writer.js';
 import { getRoutePath, getApiUrlPath } from '../path-utils.js';
 import { parseApiExports } from '../parser.js';
 import type { EndpointInfo } from '../types.js';
@@ -79,6 +79,7 @@ export async function processServerFile(filePath: string, util: UtilConfig = DEF
 	// 没有导出任何 METHOD 时，删除已有的生成文件
 	if (methods.length === 0) {
 		await removeGeneratedFile(serverPath);
+		await syncEndpointGitignore(dir);
 		return undefined;
 	}
 
@@ -102,6 +103,8 @@ export async function processServerFile(filePath: string, util: UtilConfig = DEF
 	}
 
 	await writeIfChanged(serverPath, serverContent);
+
+	await syncEndpointGitignore(dir);
 
 	const routePath = getRoutePath(filePath);
 	return {
