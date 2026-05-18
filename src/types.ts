@@ -22,8 +22,11 @@ export interface ApiMethodDef {
 	};
 }
 
+/** 解析 `-api.server.ts` 后得到的单个 HTTP 方法信息 */
 export interface MethodInfo {
+	/** HTTP 方法名，如 GET、POST */
 	method: HttpMethod;
+	/** 是否存在对应的 zMETHOD Schema 导出 */
 	hasSchema: boolean;
 	/** 是否存在 `dMETHOD` 导出（运行时通过 import 获取元数据） */
 	hasDefinition: boolean;
@@ -31,12 +34,15 @@ export interface MethodInfo {
 	customName?: string;
 }
 
+/** 单个 API 端点的完整信息（对应一个 `-api.server.ts` 文件） */
 export interface EndpointInfo {
+	/** 源文件的绝对路径 */
 	filePath: string;
 	/** 相对于 apiDir 的路由标识，如 v1_test */
 	routePath: string;
 	/** API URL 路径，如 /api/v1/test */
 	apiUrl: string;
+	/** 该端点支持的所有 HTTP 方法 */
 	methods: MethodInfo[];
 }
 
