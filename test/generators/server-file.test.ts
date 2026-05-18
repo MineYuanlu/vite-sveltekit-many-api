@@ -7,9 +7,9 @@ describe('generateServerFile', () => {
 		const methods: MethodInfo[] = [{ method: 'GET', hasSchema: false }];
 		const content = generateServerFile('-api.server', methods, '$lib/api/common.server');
 
-		expect(content).toContain('import type { RequestHandler } from \'./$types\';');
-		expect(content).toContain('import { success } from \'$lib/api/common.server\';');
-		expect(content).toContain('import { GET as _GET } from \'./-api.server\';');
+		expect(content).toContain("import type { RequestHandler } from './$types';");
+		expect(content).toContain("import { success } from '$lib/api/common.server';");
+		expect(content).toContain("import { GET as _GET } from './-api.server';");
 		expect(content).toContain('export const GET: RequestHandler = async () => {');
 		expect(content).toContain('const data = await _GET();');
 		expect(content).toContain('return success({ data });');
@@ -21,8 +21,8 @@ describe('generateServerFile', () => {
 		const methods: MethodInfo[] = [{ method: 'GET', hasSchema: true }];
 		const content = generateServerFile('-api.server', methods, '$lib/api/common.server');
 
-		expect(content).toContain('import { success, parseSearchParams } from \'$lib/api/common.server\';');
-		expect(content).toContain('import { GET as _GET, zGET } from \'./-api.server\';');
+		expect(content).toContain("import { success, parseSearchParams } from '$lib/api/common.server';");
+		expect(content).toContain("import { GET as _GET, zGET } from './-api.server';");
 		expect(content).toContain('const params = await parseSearchParams(zGET);');
 		expect(content).toContain('const data = await _GET(params);');
 	});
@@ -31,8 +31,8 @@ describe('generateServerFile', () => {
 		const methods: MethodInfo[] = [{ method: 'POST', hasSchema: true }];
 		const content = generateServerFile('-api.server', methods, '$lib/api/common.server');
 
-		expect(content).toContain('import { success, parseBody } from \'$lib/api/common.server\';');
-		expect(content).toContain('import { POST as _POST, zPOST } from \'./-api.server\';');
+		expect(content).toContain("import { success, parseBody } from '$lib/api/common.server';");
+		expect(content).toContain("import { POST as _POST, zPOST } from './-api.server';");
 		expect(content).toContain('const params = await parseBody(zPOST);');
 	});
 
@@ -43,7 +43,7 @@ describe('generateServerFile', () => {
 		];
 		const content = generateServerFile('-api.server', methods, '$lib/api/common.server');
 
-		expect(content).toContain('import { success, parseBody, parseSearchParams } from \'$lib/api/common.server\';');
+		expect(content).toContain("import { success, parseBody, parseSearchParams } from '$lib/api/common.server';");
 	});
 
 	it('should not import parse helpers when no schema', () => {
@@ -53,7 +53,7 @@ describe('generateServerFile', () => {
 		];
 		const content = generateServerFile('-api.server', methods, '$lib/api/common.server');
 
-		expect(content).toContain('import { success } from \'$lib/api/common.server\';');
+		expect(content).toContain("import { success } from '$lib/api/common.server';");
 		expect(content).not.toContain('parseBody');
 		expect(content).not.toContain('parseSearchParams');
 	});
@@ -89,6 +89,6 @@ describe('generateServerFile', () => {
 		const methods: MethodInfo[] = [{ method: 'GET', hasSchema: true }];
 		const content = generateServerFile('-api.server', methods, '$api/common.server');
 
-		expect(content).toContain('import { success, parseSearchParams } from \'$api/common.server\';');
+		expect(content).toContain("import { success, parseSearchParams } from '$api/common.server';");
 	});
 });

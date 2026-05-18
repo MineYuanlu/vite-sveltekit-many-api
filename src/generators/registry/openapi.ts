@@ -66,7 +66,7 @@ export async function generateOpenApiRegistry(endpoints: EndpointInfo[]) {
 	const lines: string[] = [];
 	lines.push(GENERATED_MARKER.trimEnd());
 	lines.push(ESLINT_IGNORE_ALL.trimEnd());
-	lines.push('import type { ApiEndpoint } from \'@yuanlu_yl/vite-sveltekit-many-api\';');
+	lines.push("import type { ApiEndpoint } from '@yuanlu_yl/vite-sveltekit-many-api';");
 	for (const imp of importLines) lines.push(imp);
 	lines.push('');
 	lines.push('export const endpoints: ApiEndpoint[] = [');

@@ -47,6 +47,7 @@ export async function GET() {
 ```
 
 保存后插件会自动生成：
+
 - `+server.ts` — SvelteKit 服务端处理文件
 - `api.remote.ts` — 远程函数包装器
 - 更新 `openapi-registry.server.ts` 和 `mcp-registry.server.ts`

@@ -33,7 +33,10 @@ export function scanAllApiFiles(): string[] {
 /**
  * 处理单个 API 文件：生成 server-file 和 remote-file。
  */
-export async function processApiFile(filePath: string, util: UtilConfig = DEFAULT_UTIL_CONFIG): Promise<EndpointInfo | undefined> {
+export async function processApiFile(
+	filePath: string,
+	util: UtilConfig = DEFAULT_UTIL_CONFIG,
+): Promise<EndpointInfo | undefined> {
 	// 并行生成 server 和 remote 文件
 	const [serverEp] = await Promise.all([processServerFile(filePath, util), processRemoteFile(filePath)]);
 

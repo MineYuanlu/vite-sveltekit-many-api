@@ -1,6 +1,14 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { GENERATED_MARKER, LOG_PREFIX, GITIGNORE_FILE, SERVER_FILE, REMOTE_FILE, type UtilConfig, GENERATED_MARKER2 } from './config.js';
+import {
+	GENERATED_MARKER,
+	LOG_PREFIX,
+	GITIGNORE_FILE,
+	SERVER_FILE,
+	REMOTE_FILE,
+	type UtilConfig,
+	GENERATED_MARKER2,
+} from './config.js';
 
 /**
  * 如果内容有变化则写入文件。

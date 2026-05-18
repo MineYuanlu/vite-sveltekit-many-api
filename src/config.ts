@@ -46,8 +46,7 @@ export interface UtilConfig {
 }
 
 /** 默认 util 配置 */
-export const DEFAULT_UTIL_CONFIG: Required<Pick<UtilConfig, 'imp' | 'schema'>> &
-	Pick<UtilConfig, 'path'> = {
+export const DEFAULT_UTIL_CONFIG: Required<Pick<UtilConfig, 'imp' | 'schema'>> & Pick<UtilConfig, 'path'> = {
 	path: 'src/lib/api/common.server.ts',
 	imp: '$lib/api/common.server',
 	schema: 'standard',

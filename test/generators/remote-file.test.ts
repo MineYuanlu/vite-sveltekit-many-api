@@ -7,8 +7,8 @@ describe('generateRemoteFile', () => {
 		const methods: MethodInfo[] = [{ method: 'GET', hasSchema: false }];
 		const content = generateRemoteFile('-api.server', methods, 'hello');
 
-		expect(content).toContain('import { query } from \'$app/server\';');
-		expect(content).toContain('import { GET } from \'./-api.server\';');
+		expect(content).toContain("import { query } from '$app/server';");
+		expect(content).toContain("import { GET } from './-api.server';");
 		expect(content).toContain('export const hello_get = query(GET);');
 		expect(content).not.toContain('command');
 	});
@@ -17,8 +17,8 @@ describe('generateRemoteFile', () => {
 		const methods: MethodInfo[] = [{ method: 'POST', hasSchema: false }];
 		const content = generateRemoteFile('-api.server', methods, 'users');
 
-		expect(content).toContain('import { command } from \'$app/server\';');
-		expect(content).toContain('import { POST } from \'./-api.server\';');
+		expect(content).toContain("import { command } from '$app/server';");
+		expect(content).toContain("import { POST } from './-api.server';");
 		expect(content).toContain('export const users_post = command(POST);');
 		expect(content).not.toContain('query');
 	});
@@ -27,7 +27,7 @@ describe('generateRemoteFile', () => {
 		const methods: MethodInfo[] = [{ method: 'GET', hasSchema: true }];
 		const content = generateRemoteFile('-api.server', methods, 'hello');
 
-		expect(content).toContain('import { GET, zGET } from \'./-api.server\';');
+		expect(content).toContain("import { GET, zGET } from './-api.server';");
 		expect(content).toContain('export const hello_get = query(zGET, GET);');
 	});
 
@@ -35,7 +35,7 @@ describe('generateRemoteFile', () => {
 		const methods: MethodInfo[] = [{ method: 'POST', hasSchema: true }];
 		const content = generateRemoteFile('-api.server', methods, 'users');
 
-		expect(content).toContain('import { POST, zPOST } from \'./-api.server\';');
+		expect(content).toContain("import { POST, zPOST } from './-api.server';");
 		expect(content).toContain('export const users_post = command(zPOST, POST);');
 	});
 
@@ -65,7 +65,7 @@ describe('generateRemoteFile', () => {
 		];
 		const content = generateRemoteFile('-api.server', methods, 'api');
 
-		expect(content).toContain('import { query, command } from \'$app/server\';');
+		expect(content).toContain("import { query, command } from '$app/server';");
 	});
 
 	it('should handle multiple methods with mixed features', () => {

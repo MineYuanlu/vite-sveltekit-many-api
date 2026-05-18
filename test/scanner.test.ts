@@ -26,7 +26,7 @@ describe('scanner', () => {
 	describe('scanAllApiFiles', () => {
 		it('should find -api.server.ts in root api dir', () => {
 			const apiDir = path.join(tempDir, 'src', 'routes', 'api');
-			writeApiFile(apiDir, 'export const GET = async () => \'hello\';');
+			writeApiFile(apiDir, "export const GET = async () => 'hello';");
 			const files = scanAllApiFiles();
 			expect(files).toHaveLength(1);
 			expect(files[0]).toContain('-api.server.ts');
@@ -38,9 +38,9 @@ describe('scanner', () => {
 			const usersDir = path.join(v1Dir, 'users');
 			fs.mkdirSync(usersDir, { recursive: true });
 
-			writeApiFile(apiDir, 'export const GET = async () => \'root\';');
-			writeApiFile(v1Dir, 'export const POST = async () => \'v1\';');
-			writeApiFile(usersDir, 'export const GET = async () => \'users\';');
+			writeApiFile(apiDir, "export const GET = async () => 'root';");
+			writeApiFile(v1Dir, "export const POST = async () => 'v1';");
+			writeApiFile(usersDir, "export const GET = async () => 'users';");
 
 			const files = scanAllApiFiles();
 			expect(files).toHaveLength(3);
@@ -50,7 +50,7 @@ describe('scanner', () => {
 		it('should ignore non-api files', () => {
 			const apiDir = path.join(tempDir, 'src', 'routes', 'api');
 			fs.writeFileSync(path.join(apiDir, 'helper.ts'), 'export const util = () => {};', 'utf-8');
-			writeApiFile(apiDir, 'export const GET = async () => \'hello\';');
+			writeApiFile(apiDir, "export const GET = async () => 'hello';");
 
 			const files = scanAllApiFiles();
 			expect(files).toHaveLength(1);
@@ -75,7 +75,7 @@ describe('scanner', () => {
 		it('should process valid api file and return endpoint info', async () => {
 			const apiDir = path.join(tempDir, 'src', 'routes', 'api', 'hello');
 			fs.mkdirSync(apiDir, { recursive: true });
-			const file = writeApiFile(apiDir, 'export const GET = async () => \'hello\';');
+			const file = writeApiFile(apiDir, "export const GET = async () => 'hello';");
 
 			const ep = await processApiFile(file);
 			expect(ep).toBeDefined();
@@ -97,7 +97,7 @@ describe('scanner', () => {
 
 		it('should return undefined when no methods exported', async () => {
 			const apiDir = path.join(tempDir, 'src', 'routes', 'api');
-			const file = writeApiFile(apiDir, 'export const helper = () => \'hello\';');
+			const file = writeApiFile(apiDir, "export const helper = () => 'hello';");
 
 			const ep = await processApiFile(file);
 			expect(ep).toBeUndefined();
@@ -106,7 +106,7 @@ describe('scanner', () => {
 		it('should generate companion files', async () => {
 			const apiDir = path.join(tempDir, 'src', 'routes', 'api', 'test');
 			fs.mkdirSync(apiDir, { recursive: true });
-			writeApiFile(apiDir, 'export const GET = async () => \'hello\';');
+			writeApiFile(apiDir, "export const GET = async () => 'hello';");
 
 			const file = path.join(apiDir, '-api.server.ts');
 			await processApiFile(file);
@@ -123,8 +123,8 @@ describe('scanner', () => {
 			const v1Dir = path.join(apiDir, 'v1');
 			fs.mkdirSync(v1Dir, { recursive: true });
 
-			writeApiFile(apiDir, 'export const GET = async () => \'root\';');
-			writeApiFile(v1Dir, 'export const POST = async () => \'v1\';');
+			writeApiFile(apiDir, "export const GET = async () => 'root';");
+			writeApiFile(v1Dir, "export const POST = async () => 'v1';");
 
 			const endpoints = await scanAll();
 			expect(endpoints).toHaveLength(2);
@@ -138,7 +138,7 @@ describe('scanner', () => {
 			fs.mkdirSync(v1Dir, { recursive: true });
 
 			// 有效文件
-			writeApiFile(apiDir, 'export const GET = async () => \'root\';');
+			writeApiFile(apiDir, "export const GET = async () => 'root';");
 			// 损坏文件 (无法解析)
 			fs.writeFileSync(path.join(v1Dir, '-api.server.ts'), 'export const { broken', 'utf-8');
 

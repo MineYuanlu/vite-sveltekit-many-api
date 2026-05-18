@@ -8,7 +8,11 @@ import { resolveRealPath } from './path-utils.js';
 import type { EndpointInfo } from './types.js';
 import type { ViteDevServer } from 'vite';
 
-export function setupWatcher(server: ViteDevServer, allEndpoints: Map<string, EndpointInfo>, util: UtilConfig = DEFAULT_UTIL_CONFIG) {
+export function setupWatcher(
+	server: ViteDevServer,
+	allEndpoints: Map<string, EndpointInfo>,
+	util: UtilConfig = DEFAULT_UTIL_CONFIG,
+) {
 	const resolvedApiDir = resolveRealPath(path.resolve(API_ROUTES_DIR));
 
 	let registryDebounceTimer: ReturnType<typeof setTimeout> | null = null;

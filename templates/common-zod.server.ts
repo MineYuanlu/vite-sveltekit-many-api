@@ -3,7 +3,10 @@ import { error, json } from '@sveltejs/kit';
 import { getRequestEvent } from '$app/server';
 import z from 'zod';
 
-export function success({ message = 'OK', data }: Partial<{ ok: true; message: string; data: unknown }>, init?: ResponseInit) {
+export function success(
+	{ message = 'OK', data }: Partial<{ ok: true; message: string; data: unknown }>,
+	init?: ResponseInit,
+) {
 	return json({ ok: true, message, data }, init);
 }
 

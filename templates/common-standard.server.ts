@@ -3,7 +3,10 @@ import { error, json } from '@sveltejs/kit';
 import { getRequestEvent } from '$app/server';
 import type { StandardSchemaV1 } from '@standard-schema/spec';
 
-export function success({ message = 'OK', data }: Partial<{ ok: true; message: string; data: unknown }>, init?: ResponseInit) {
+export function success(
+	{ message = 'OK', data }: Partial<{ ok: true; message: string; data: unknown }>,
+	init?: ResponseInit,
+) {
 	return json({ ok: true, message, data }, init);
 }
 
@@ -27,10 +30,12 @@ function merge(user: unknown, intern: unknown) {
 }
 
 function formatIssues(issues: ReadonlyArray<StandardSchemaV1.Issue>): string {
-	return issues.map((issue) => {
-		const path = issue.path?.map((p) => (typeof p === 'object' ? p.key : p)).join('.') ?? 'root';
-		return `${path}: ${issue.message}`;
-	}).join(', ');
+	return issues
+		.map((issue) => {
+			const path = issue.path?.map((p) => (typeof p === 'object' ? p.key : p)).join('.') ?? 'root';
+			return `${path}: ${issue.message}`;
+		})
+		.join(', ');
 }
 
 /**
