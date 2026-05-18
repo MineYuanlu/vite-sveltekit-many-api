@@ -25,15 +25,10 @@ export interface ApiMethodDef {
 export interface MethodInfo {
 	method: HttpMethod;
 	hasSchema: boolean;
-	/** 通过 `dMETHOD` 导出的描述 */
-	description?: string;
+	/** 是否存在 `dMETHOD` 导出（运行时通过 import 获取元数据） */
+	hasDefinition: boolean;
 	/** 通过 `nMETHOD` 自定义的导出名 */
 	customName?: string;
-	/** 通过 `dMETHOD.mcp` 导出的 MCP 配置 */
-	mcp?: {
-		category?: string;
-		extraData?: Record<string, unknown>;
-	};
 }
 
 export interface EndpointInfo {

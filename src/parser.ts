@@ -27,44 +27,22 @@ export async function parseApiExports(filePath: string): Promise<MethodInfo[]> {
 		if (!handlerExists) continue;
 		const schemaExists = exportNames.has(`z${method}`);
 
-		// 解析 nMETHOD（自定义名称）—— 保持正则提取
+		// 解析 nMETHOD（自定义名称）—— 正则提取字符串字面量
 		let customName: string | undefined;
 		if (exportNames.has(`n${method}`)) {
-			const re = new RegExp(`export\\s+(?:const|let|var)\\s+n${method}\\s*=\\s*(['"])([^'"]*?)\\1`);
+			const re = new RegExp(`export\\s+(?:const|let|var)\\s+n${method}\\s*=\\s*(['"])([^'"]*)\\1`);
 			const match = content.match(re);
 			if (match) customName = match[2];
 		}
 
-		// 解析 dMETHOD（描述和 MCP 配置）
-		let description: string | undefined;
-		let mcp: MethodInfo['mcp'] | undefined;
-
-		if (exportNames.has(`d${method}`)) {
-			// dMETHOD 是对象导出，提取其中的 description 字符串字面量
-			// 以及 mcp 配置中的 category 等简单字符串
-			const descRe = new RegExp(
-				`export\\s+(?:const|let|var)\\s+d${method}\\s*=\\s*\\{[^}]*description\\s*:\\s*(['"])([^'"]*?)\\1`,
-			);
-			const descMatch = content.match(descRe);
-			if (descMatch) description = descMatch[2];
-
-			// 检查是否有 mcp 字段（简单正则判断存在性）
-			const mcpRe = new RegExp(`export\\s+(?:const|let|var)\\s+d${method}\\s*=\\s*\\{[^}]*mcp\\s*:`);
-			if (mcpRe.test(content)) {
-				// mcp 配置作为对象整体导入，具体值运行时获取
-				mcp = {};
-			}
-		}
-
-		// 标记是否有 dMETHOD 导出（无论是否提取到具体内容）
-		const hasDMethod = exportNames.has(`d${method}`);
+		// 标记是否有 dMETHOD 导出（运行时通过 import 获取元数据）
+		const hasDefinition = exportNames.has(`d${method}`);
 
 		methods.push({
 			method: method as HttpMethod,
 			hasSchema: schemaExists,
-			description: hasDMethod ? (description ?? '<imported>') : undefined,
+			hasDefinition,
 			customName,
-			mcp: hasDMethod ? mcp : undefined,
 		});
 	}
 	return methods;

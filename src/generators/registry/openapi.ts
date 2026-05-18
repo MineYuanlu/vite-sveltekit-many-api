@@ -40,7 +40,7 @@ export async function generateOpenApiRegistry(endpoints: EndpointInfo[]) {
 		const importItems: string[] = [];
 		for (const m of ep.methods) {
 			if (m.hasSchema) importItems.push(`z${m.method} as ${prefix}_z${m.method}`);
-			if (m.description !== undefined) importItems.push(`d${m.method} as ${prefix}_d${m.method}`);
+			if (m.hasDefinition) importItems.push(`d${m.method} as ${prefix}_d${m.method}`);
 		}
 
 		if (importItems.length > 0) {
@@ -49,7 +49,7 @@ export async function generateOpenApiRegistry(endpoints: EndpointInfo[]) {
 
 		for (const m of ep.methods) {
 			const operationId = m.customName ?? `${ep.routePath}_${m.method.toLowerCase()}`;
-			const descriptionValue = m.description !== undefined ? `${prefix}_d${m.method}.description` : 'undefined';
+			const descriptionValue = m.hasDefinition ? `${prefix}_d${m.method}.description` : 'undefined';
 			const schemaValue = m.hasSchema ? `${prefix}_z${m.method}` : 'undefined';
 
 			entryLines.push('  {');

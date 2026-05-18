@@ -27,8 +27,8 @@ describe('generateOpenApiRegistry', () => {
 		return {
 			filePath: path.join(tempDir, 'src', 'routes', 'api', '-api.server.ts'),
 			routePath: '',
-			apiUrl: '/api/',
-			methods: [{ method: 'GET', hasSchema: false }],
+			apiUrl: '/api',
+			methods: [{ method: 'GET', hasSchema: false, hasDefinition: false }],
 			...overrides,
 		};
 	}
@@ -43,9 +43,9 @@ describe('generateOpenApiRegistry', () => {
 
 		const content = fs.readFileSync(registryPath, 'utf-8');
 		expect(content).toContain('export const endpoints: ApiEndpoint[] = [');
-		expect(content).toContain('path: \'/api/\'');
-		expect(content).toContain('method: \'GET\'');
-		expect(content).toContain('operationId: \'_get\'');
+		expect(content).toContain("path: '/api'");
+		expect(content).toContain("method: 'GET'");
+		expect(content).toContain("operationId: '_get'");
 		expect(content).toContain('usesBody: false');
 	});
 
@@ -54,7 +54,7 @@ describe('generateOpenApiRegistry', () => {
 			filePath: path.join(tempDir, 'src', 'routes', 'api', 'hello', '-api.server.ts'),
 			routePath: 'hello',
 			apiUrl: '/api/hello',
-			methods: [{ method: 'POST', hasSchema: true, description: 'Create hello' }],
+			methods: [{ method: 'POST', hasSchema: true, hasDefinition: true }],
 		});
 		const written = await generateOpenApiRegistry([ep]);
 		expect(written).toBe(true);
@@ -63,7 +63,7 @@ describe('generateOpenApiRegistry', () => {
 		const content = fs.readFileSync(registryPath, 'utf-8');
 		expect(content).toContain('zPOST as s0_zPOST');
 		expect(content).toContain('dPOST as s0_dPOST');
-		expect(content).toContain('operationId: \'hello_post\'');
+		expect(content).toContain("operationId: 'hello_post'");
 		expect(content).toContain('usesBody: true');
 	});
 
@@ -72,13 +72,13 @@ describe('generateOpenApiRegistry', () => {
 			filePath: path.join(tempDir, 'src', 'routes', 'api', 'hello', '-api.server.ts'),
 			routePath: 'hello',
 			apiUrl: '/api/hello',
-			methods: [{ method: 'GET', hasSchema: false, customName: 'fetchHello' }],
+			methods: [{ method: 'GET', hasSchema: false, customName: 'fetchHello', hasDefinition: false }],
 		});
 		await generateOpenApiRegistry([ep]);
 
 		const registryPath = path.join(tempDir, 'src', 'routes', 'api', 'openapi-registry.server.ts');
 		const content = fs.readFileSync(registryPath, 'utf-8');
-		expect(content).toContain('operationId: \'fetchHello\'');
+		expect(content).toContain("operationId: 'fetchHello'");
 	});
 
 	it('should sort endpoints by routePath', async () => {
@@ -87,13 +87,13 @@ describe('generateOpenApiRegistry', () => {
 				filePath: path.join(tempDir, 'src', 'routes', 'api', 'zoo', '-api.server.ts'),
 				routePath: 'zoo',
 				apiUrl: '/api/zoo',
-				methods: [{ method: 'GET', hasSchema: false }],
+				methods: [{ method: 'GET', hasSchema: false, hasDefinition: false }],
 			}),
 			createEndpoint({
 				filePath: path.join(tempDir, 'src', 'routes', 'api', 'apple', '-api.server.ts'),
 				routePath: 'apple',
 				apiUrl: '/api/apple',
-				methods: [{ method: 'GET', hasSchema: false }],
+				methods: [{ method: 'GET', hasSchema: false, hasDefinition: false }],
 			}),
 		];
 		await generateOpenApiRegistry(eps);
@@ -101,8 +101,8 @@ describe('generateOpenApiRegistry', () => {
 		const registryPath = path.join(tempDir, 'src', 'routes', 'api', 'openapi-registry.server.ts');
 		const content = fs.readFileSync(registryPath, 'utf-8');
 		// apple should come before zoo
-		const appleIndex = content.indexOf('path: \'/api/apple\'');
-		const zooIndex = content.indexOf('path: \'/api/zoo\'');
+		const appleIndex = content.indexOf("path: '/api/apple'");
+		const zooIndex = content.indexOf("path: '/api/zoo'");
 		expect(appleIndex).toBeGreaterThan(-1);
 		expect(zooIndex).toBeGreaterThan(-1);
 		expect(appleIndex).toBeLessThan(zooIndex);
@@ -114,18 +114,18 @@ describe('generateOpenApiRegistry', () => {
 			routePath: 'hello',
 			apiUrl: '/api/hello',
 			methods: [
-				{ method: 'GET', hasSchema: false },
-				{ method: 'POST', hasSchema: true },
-				{ method: 'DELETE', hasSchema: false },
+				{ method: 'GET', hasSchema: false, hasDefinition: false },
+				{ method: 'POST', hasSchema: true, hasDefinition: false },
+				{ method: 'DELETE', hasSchema: false, hasDefinition: false },
 			],
 		});
 		await generateOpenApiRegistry([ep]);
 
 		const registryPath = path.join(tempDir, 'src', 'routes', 'api', 'openapi-registry.server.ts');
 		const content = fs.readFileSync(registryPath, 'utf-8');
-		expect(content).toContain('method: \'GET\'');
-		expect(content).toContain('method: \'POST\'');
-		expect(content).toContain('method: \'DELETE\'');
+		expect(content).toContain("method: 'GET'");
+		expect(content).toContain("method: 'POST'");
+		expect(content).toContain("method: 'DELETE'");
 	});
 
 	it('should include generated marker', async () => {

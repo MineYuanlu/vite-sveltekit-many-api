@@ -15,21 +15,21 @@ describe('parser', () => {
 
 	describe('basic method detection', () => {
 		it('should detect export const GET = ...', async () => {
-			const file = writeApiFile(tempDir, 'export const GET = async () => \'hello\';');
+			const file = writeApiFile(tempDir, "export const GET = async () => 'hello';");
 			const methods = await parseApiExports(file);
 			expect(methods).toHaveLength(1);
 			expect(methods[0]).toMatchObject({ method: 'GET', hasSchema: false });
 		});
 
 		it('should detect export async function GET(...)', async () => {
-			const file = writeApiFile(tempDir, 'export async function GET() { return \'hello\'; }');
+			const file = writeApiFile(tempDir, "export async function GET() { return 'hello'; }");
 			const methods = await parseApiExports(file);
 			expect(methods).toHaveLength(1);
 			expect(methods[0]).toMatchObject({ method: 'GET', hasSchema: false });
 		});
 
 		it('should detect export function GET(...)', async () => {
-			const file = writeApiFile(tempDir, 'export function GET() { return \'hello\'; }');
+			const file = writeApiFile(tempDir, "export function GET() { return 'hello'; }");
 			const methods = await parseApiExports(file);
 			expect(methods).toHaveLength(1);
 			expect(methods[0]).toMatchObject({ method: 'GET', hasSchema: false });
@@ -49,7 +49,7 @@ export const GET = async (params) => params;`,
 		});
 
 		it('should not detect schema when zMETHOD is missing', async () => {
-			const file = writeApiFile(tempDir, 'export const GET = async () => \'hello\';');
+			const file = writeApiFile(tempDir, "export const GET = async () => 'hello';");
 			const methods = await parseApiExports(file);
 			expect(methods[0]).toMatchObject({ method: 'GET', hasSchema: false });
 		});
@@ -102,8 +102,8 @@ export const GET = async () => 'hello';`,
 		});
 	});
 
-	describe('description (dMETHOD)', () => {
-		it('should extract description from dGET', async () => {
+	describe('definition (dMETHOD)', () => {
+		it('should detect dGET presence', async () => {
 			const file = writeApiFile(
 				tempDir,
 				`export const dGET = { description: 'Get user info' };
@@ -112,12 +112,11 @@ export const GET = async () => 'hello';`,
 			const methods = await parseApiExports(file);
 			expect(methods[0]).toMatchObject({
 				method: 'GET',
-				description: 'Get user info',
-				mcp: undefined,
+				hasDefinition: true,
 			});
 		});
 
-		it('should detect mcp field presence in dGET', async () => {
+		it('should detect dGET with mcp field', async () => {
 			const file = writeApiFile(
 				tempDir,
 				`export const dGET = { description: 'Get user info', mcp: { annotations: {} } };
@@ -126,23 +125,16 @@ export const GET = async () => 'hello';`,
 			const methods = await parseApiExports(file);
 			expect(methods[0]).toMatchObject({
 				method: 'GET',
-				description: 'Get user info',
-				mcp: {},
+				hasDefinition: true,
 			});
 		});
 
-		it('should mark description as <imported> when dGET exists but description regex fails', async () => {
-			// 描述不是字符串字面量
-			const file = writeApiFile(
-				tempDir,
-				`export const dGET = { description: getDescription() };
-export const GET = async () => 'hello';`,
-			);
+		it('should not detect definition when dGET is missing', async () => {
+			const file = writeApiFile(tempDir, `export const GET = async () => 'hello';`);
 			const methods = await parseApiExports(file);
 			expect(methods[0]).toMatchObject({
 				method: 'GET',
-				description: '<imported>',
-				mcp: undefined,
+				hasDefinition: false,
 			});
 		});
 	});
@@ -162,7 +154,7 @@ export const zPOST = z.object({ name: z.string() });`,
 		});
 
 		it('should return empty array when no methods exported', async () => {
-			const file = writeApiFile(tempDir, 'export const helper = () => \'hello\';');
+			const file = writeApiFile(tempDir, "export const helper = () => 'hello';");
 			const methods = await parseApiExports(file);
 			expect(methods).toHaveLength(0);
 		});
@@ -203,9 +195,8 @@ export const GET = async (params) => params;`,
 			expect(methods[0]).toEqual({
 				method: 'GET',
 				hasSchema: true,
-				description: 'Get user by ID',
+				hasDefinition: true,
 				customName: 'getUserById',
-				mcp: {},
 			});
 		});
 	});

@@ -49,10 +49,7 @@ export async function generateMcpRegistry(endpoints: EndpointInfo[]) {
 		for (const m of ep.methods) {
 			importItems.push(`${m.method} as ${prefix}_${m.method}`);
 			if (m.hasSchema) importItems.push(`z${m.method} as ${prefix}_z${m.method}`);
-			// dMETHOD 同时用于 OpenAPI 和 MCP，如有 mcp 配置则也需要导入
-			if (m.description !== undefined || m.mcp !== undefined) {
-				importItems.push(`d${m.method} as ${prefix}_d${m.method}`);
-			}
+			if (m.hasDefinition) importItems.push(`d${m.method} as ${prefix}_d${m.method}`);
 		}
 
 		if (importItems.length > 0) {
@@ -64,7 +61,7 @@ export async function generateMcpRegistry(endpoints: EndpointInfo[]) {
 			const operationId = m.customName ?? `${ep.routePath}_${m.method.toLowerCase()}`;
 			const schemaValue = m.hasSchema ? `${prefix}_z${m.method}` : 'undefined';
 
-			const dMethodRef = m.description !== undefined || m.mcp !== undefined ? `${prefix}_d${m.method}` : 'undefined';
+			const dMethodRef = m.hasDefinition ? `${prefix}_d${m.method}` : 'undefined';
 			entryLines.push('  {');
 			entryLines.push(`    name: '${operationId}',`);
 			entryLines.push(`    inputSchema: ${schemaValue},`);
