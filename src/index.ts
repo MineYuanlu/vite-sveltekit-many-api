@@ -1,4 +1,5 @@
 import type { Plugin } from 'vite';
+import { loadConfigFromFile } from 'vite';
 import { LOG_PREFIX, DEFAULT_UTIL_CONFIG } from './config.js';
 import type { ApiRoutesConfig, UtilConfig } from './config.js';
 import { scanAll } from './scanner.js';
@@ -13,19 +14,26 @@ export type { ApiEndpoint } from './generators/registry/openapi.js';
 export type { McpTool } from './generators/registry/mcp.js';
 export type { ApiRoutesConfig, UtilConfig } from './config.js';
 
-export function apiRoutes(config: ApiRoutesConfig = {}): Plugin {
-	// 合并 util 配置
-	const util: UtilConfig = {
+const PLUGIN_NAME = '@yuanlu_yl/vite-sveltekit-many-api';
+
+function mergeUtil(config: ApiRoutesConfig = {}): UtilConfig {
+	return {
 		path: config.util?.path ?? DEFAULT_UTIL_CONFIG.path,
 		imp: config.util?.imp ?? DEFAULT_UTIL_CONFIG.imp,
 		schema: config.util?.schema ?? DEFAULT_UTIL_CONFIG.schema,
 	};
+}
+
+export function apiRoutes(config: ApiRoutesConfig = {}): Plugin {
+	const util = mergeUtil(config);
 
 	// 维护所有端点的内存状态，用于增量更新注册表
 	const allEndpoints = new Map<string, EndpointInfo>();
 
 	return {
-		name: '@yuanlu_yl/vite-sveltekit-many-api',
+		name: PLUGIN_NAME,
+		// @ts-expect-error 暴露原始配置供 CLI 读取
+		__apiRoutesConfig: config,
 		async buildStart() {
 			// 确保 util 模板文件存在
 			await ensureUtilTemplate(util);
@@ -62,13 +70,51 @@ export function apiRoutes(config: ApiRoutesConfig = {}): Plugin {
 	};
 }
 
-if (process.argv[2] === 'generate') {
+async function runCli() {
+	// 解析参数：支持 `generate` 和 `--config <path>`
+	const args = process.argv.slice(2);
+	const generateIndex = args.indexOf('generate');
+	if (generateIndex === -1) return;
+
+	// 查找 --config 参数
+	const configFlagIndex = args.indexOf('--config');
+	const configFile = configFlagIndex !== -1 ? args[configFlagIndex + 1] : undefined;
+
 	console.log(`${LOG_PREFIX} CLI 模式：扫描 API 文件...`);
-	scanAll()
-		.then((endpoints) => generateRegistryFiles(endpoints))
-		.then(() => console.log(`${LOG_PREFIX} 生成完成`))
-		.catch((err) => {
-			console.error(`${LOG_PREFIX} 扫描出错:`, err);
-			process.exit(1);
-		});
+
+	// 加载 vite 配置以提取 apiRoutes 的配置
+	let pluginConfig: ApiRoutesConfig = {};
+	try {
+		const loaded = await loadConfigFromFile(
+			{ command: 'build', mode: 'production' },
+			configFile,
+			process.cwd(),
+		);
+		if (loaded) {
+			for (const p of loaded.config.plugins || []) {
+				const plugin = typeof p === 'function' ? (p as unknown as () => unknown)() : p;
+				if (plugin && (plugin as any).name === PLUGIN_NAME) {
+					pluginConfig = (plugin as any).__apiRoutesConfig ?? {};
+					console.log(`${LOG_PREFIX} 已从 vite 配置加载 apiRoutes 配置`);
+					break;
+				}
+			}
+		}
+	} catch (e) {
+		console.warn(`${LOG_PREFIX} 加载 vite 配置失败，使用默认配置:`, e);
+	}
+
+	const util = mergeUtil(pluginConfig);
+
+	await ensureUtilTemplate(util);
+	const endpoints = await scanAll(util);
+	await generateRegistryFiles(endpoints);
+	console.log(`${LOG_PREFIX} 生成完成`);
+}
+
+if (process.argv[2] === 'generate') {
+	runCli().catch((err) => {
+		console.error(`${LOG_PREFIX} 扫描出错:`, err);
+		process.exit(1);
+	});
 }
