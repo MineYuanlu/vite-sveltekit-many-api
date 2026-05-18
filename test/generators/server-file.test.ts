@@ -5,10 +5,10 @@ import type { MethodInfo } from '../../src/types.js';
 describe('generateServerFile', () => {
 	it('should generate basic GET handler without schema', () => {
 		const methods: MethodInfo[] = [{ method: 'GET', hasSchema: false }];
-		const content = generateServerFile('-api.server', methods, '$lib/api/common.server.ts');
+		const content = generateServerFile('-api.server', methods, '$lib/api/common.server');
 
-		expect(content).toContain('import type { RequestHandler } from \'./$types.js\';');
-		expect(content).toContain('import { success } from \'$lib/api/common.server.ts\';');
+		expect(content).toContain('import type { RequestHandler } from \'./$types\';');
+		expect(content).toContain('import { success } from \'$lib/api/common.server\';');
 		expect(content).toContain('import { GET as _GET } from \'./-api.server\';');
 		expect(content).toContain('export const GET: RequestHandler = async () => {');
 		expect(content).toContain('const data = await _GET();');
@@ -19,9 +19,9 @@ describe('generateServerFile', () => {
 
 	it('should generate GET handler with schema using parseSearchParams', () => {
 		const methods: MethodInfo[] = [{ method: 'GET', hasSchema: true }];
-		const content = generateServerFile('-api.server', methods, '$lib/api/common.server.ts');
+		const content = generateServerFile('-api.server', methods, '$lib/api/common.server');
 
-		expect(content).toContain('import { success, parseSearchParams } from \'$lib/api/common.server.ts\';');
+		expect(content).toContain('import { success, parseSearchParams } from \'$lib/api/common.server\';');
 		expect(content).toContain('import { GET as _GET, zGET } from \'./-api.server\';');
 		expect(content).toContain('const params = await parseSearchParams(zGET);');
 		expect(content).toContain('const data = await _GET(params);');
@@ -29,9 +29,9 @@ describe('generateServerFile', () => {
 
 	it('should generate POST handler with schema using parseBody', () => {
 		const methods: MethodInfo[] = [{ method: 'POST', hasSchema: true }];
-		const content = generateServerFile('-api.server', methods, '$lib/api/common.server.ts');
+		const content = generateServerFile('-api.server', methods, '$lib/api/common.server');
 
-		expect(content).toContain('import { success, parseBody } from \'$lib/api/common.server.ts\';');
+		expect(content).toContain('import { success, parseBody } from \'$lib/api/common.server\';');
 		expect(content).toContain('import { POST as _POST, zPOST } from \'./-api.server\';');
 		expect(content).toContain('const params = await parseBody(zPOST);');
 	});
@@ -41,9 +41,9 @@ describe('generateServerFile', () => {
 			{ method: 'GET', hasSchema: true },
 			{ method: 'POST', hasSchema: true },
 		];
-		const content = generateServerFile('-api.server', methods, '$lib/api/common.server.ts');
+		const content = generateServerFile('-api.server', methods, '$lib/api/common.server');
 
-		expect(content).toContain('import { success, parseBody, parseSearchParams } from \'$lib/api/common.server.ts\';');
+		expect(content).toContain('import { success, parseBody, parseSearchParams } from \'$lib/api/common.server\';');
 	});
 
 	it('should not import parse helpers when no schema', () => {
@@ -51,9 +51,9 @@ describe('generateServerFile', () => {
 			{ method: 'GET', hasSchema: false },
 			{ method: 'POST', hasSchema: false },
 		];
-		const content = generateServerFile('-api.server', methods, '$lib/api/common.server.ts');
+		const content = generateServerFile('-api.server', methods, '$lib/api/common.server');
 
-		expect(content).toContain('import { success } from \'$lib/api/common.server.ts\';');
+		expect(content).toContain('import { success } from \'$lib/api/common.server\';');
 		expect(content).not.toContain('parseBody');
 		expect(content).not.toContain('parseSearchParams');
 	});
@@ -63,7 +63,7 @@ describe('generateServerFile', () => {
 			{ method: 'PUT', hasSchema: true },
 			{ method: 'PATCH', hasSchema: true },
 		];
-		const content = generateServerFile('-api.server', methods, '$lib/api/common.server.ts');
+		const content = generateServerFile('-api.server', methods, '$lib/api/common.server');
 
 		expect(content).toContain('parseBody');
 		expect(content).not.toContain('parseSearchParams');
@@ -71,7 +71,7 @@ describe('generateServerFile', () => {
 
 	it('should handle DELETE with parseSearchParams', () => {
 		const methods: MethodInfo[] = [{ method: 'DELETE', hasSchema: true }];
-		const content = generateServerFile('-api.server', methods, '$lib/api/common.server.ts');
+		const content = generateServerFile('-api.server', methods, '$lib/api/common.server');
 
 		expect(content).toContain('parseSearchParams');
 		expect(content).not.toContain('parseBody');
@@ -79,7 +79,7 @@ describe('generateServerFile', () => {
 
 	it('should include generated marker and eslint ignore', () => {
 		const methods: MethodInfo[] = [{ method: 'GET', hasSchema: false }];
-		const content = generateServerFile('-api.server', methods, '$lib/api/common.server.ts');
+		const content = generateServerFile('-api.server', methods, '$lib/api/common.server');
 
 		expect(content.startsWith('// @generated by @yuanlu_yl/vite-sveltekit-many-api')).toBe(true);
 		expect(content).toContain('/* eslint-disable */');

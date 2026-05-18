@@ -15,7 +15,7 @@ export interface McpTool {
 	/** 路径信息 */
 	apiEndpoint: { path: string; method: string };
 	/** 处理函数 */
-	handler: (args: any) => Promise<unknown>;
+	handler: (args: any) => unknown | Promise<unknown>;
 	/** 接口配置 */
 	definition?: ApiMethodDef;
 }
@@ -78,7 +78,7 @@ export async function generateMcpRegistry(endpoints: EndpointInfo[]) {
 	const lines: string[] = [];
 	lines.push(GENERATED_MARKER.trimEnd());
 	lines.push(ESLINT_IGNORE_ALL.trimEnd());
-	lines.push('import type { McpTool } from \'@yuanlu_yl/vite-sveltekit-many-api\';');
+	lines.push("import type { McpTool } from '@yuanlu_yl/vite-sveltekit-many-api';");
 	for (const imp of importLines) lines.push(imp);
 	lines.push('');
 	lines.push('export const mcpTools: McpTool[] = [');

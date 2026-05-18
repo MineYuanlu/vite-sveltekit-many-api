@@ -30,7 +30,7 @@ export function generateServerFile(apiFileName: string, methods: EndpointInfo['m
 	if (needsBody) parseImports.push('parseBody');
 	if (needsParams) parseImports.push('parseSearchParams');
 
-	lines.push('import type { RequestHandler } from \'./$types.js\';');
+	lines.push('import type { RequestHandler } from \'./$types\';');
 	lines.push(`import { ${parseImports.join(', ')} } from '${utilImportPath}';`);
 	lines.push(`import { ${apiImportItems.join(', ')} } from './${apiFileName}';`);
 

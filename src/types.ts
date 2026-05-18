@@ -8,7 +8,17 @@ export interface ApiMethodDef {
 	/** MCP 专属配置 */
 	mcp?: {
 		/** 工具注释 */
-		annotations?: Record<string, unknown>;
+		annotations?: {
+			title?: string | undefined;
+			/** 工具是否会修改环境状态 */
+			readOnlyHint?: boolean | undefined;
+			/** 如果会修改，这种修改是否是破坏性的（而非添加性的） */
+			destructiveHint?: boolean | undefined;
+			/** 使用相同参数多次调用是否安全（幂等性） */
+			idempotentHint?: boolean | undefined;
+			/** 工具是否会与外部实体（如互联网）交互 */
+			openWorldHint?: boolean | undefined;
+		};
 	};
 }
 
