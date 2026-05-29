@@ -15,10 +15,10 @@ export function resolveRealPath(p: string): string {
 }
 
 /** 从文件路径计算路由路径标识（如 v1_test） */
-export function getRoutePath(filePath: string): string {
-	const apiDir = resolveRealPath(path.resolve(API_ROUTES_DIR));
+export function getRoutePath(filePath: string, apiDir: string = API_ROUTES_DIR): string {
+	const resolvedApiDir = resolveRealPath(path.resolve(apiDir));
 	const realFilePath = resolveRealPath(path.dirname(filePath));
-	const rel = path.relative(apiDir, realFilePath);
+	const rel = path.relative(resolvedApiDir, realFilePath);
 	return rel.split(path.sep).filter(Boolean).join('_');
 }
 

@@ -7,7 +7,8 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
-		"prepare": "svelte-kit sync || echo ''",
+		"prepare": "npm --prefix .. run build && (svelte-kit sync || echo '') && npm run generate",
+		"generate": "node -e \"require('@yuanlu_yl/vite-sveltekit-many-api')\" generate",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
 	},
@@ -21,6 +22,9 @@
 		"vite": "^8.0.7"
 	},
 	"dependencies": {
+		"@cfworker/json-schema": "^4.1.1",
+		"@modelcontextprotocol/server": "^2.0.0-alpha.2",
+		"@scalar/sveltekit": "^0.2.19",
 		"@yuanlu_yl/vite-sveltekit-many-api": "file:..",
 		"zod": "^4.4.3"
 	}

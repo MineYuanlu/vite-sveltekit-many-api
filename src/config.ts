@@ -17,15 +17,16 @@ export const REMOTE_FILE = 'api.remote.ts';
 export const GITIGNORE_FILE = '.gitignore';
 
 /** 注册表文件名 */
-export const OPENAPI_REGISTRY_FILE = 'openapi-registry.server.ts';
-export const MCP_REGISTRY_FILE = 'mcp-registry.server.ts';
+export const REGISTRY_FILE = 'registry.server.ts';
+export const REGISTRY_MESSAGES_FILE = 'registry.messages.ts';
 
-/** API 路由根目录 */
+/** API 路由根目录（默认值；可通过 ApiRoutesConfig.apiDir 覆盖） */
 export const API_ROUTES_DIR = 'src/routes/api';
 
-/** .gitignore 内容 */
-export const GITIGNORE_CONTENT = `/${SERVER_FILE}\n/${REMOTE_FILE}\n`;
-export const API_GITIGNORE_ENTRY = `/${OPENAPI_REGISTRY_FILE}\n/${MCP_REGISTRY_FILE}\n`;
+/** 默认分组提取正则（字符串，运行时 new RegExp()） */
+export const DEFAULT_GROUP_PATTERN = '/api/v[^/]+/([^/]+)';
+
+export const API_GITIGNORE_ENTRY = `/${REGISTRY_FILE}\n/${REGISTRY_MESSAGES_FILE}\n`;
 
 /** 日志前缀 */
 export const LOG_PREFIX = '[api-routes]';
@@ -52,7 +53,53 @@ export const DEFAULT_UTIL_CONFIG: Required<Pick<UtilConfig, 'imp' | 'schema'>> &
 	schema: 'standard',
 };
 
+/** i18n 分组标签文件配置 */
+export interface MessagesConfig {
+	/** 消息模块导入路径（默认 '$lib/paraglide/messages'） */
+	from?: string;
+	/** 导入的消息对象名（默认 'm'） */
+	export?: string;
+	/** 消息函数返回类型（默认 'string'） */
+	returnType?: string;
+	/** 键前缀（默认 'group'）；实际键为 '{keyPrefix}.{groupName}' */
+	keyPrefix?: string;
+}
+
+/** 默认 messages 配置 */
+export const DEFAULT_MESSAGES_CONFIG: Required<MessagesConfig> = {
+	from: '$lib/paraglide/messages',
+	export: 'm',
+	returnType: 'string',
+	keyPrefix: 'group',
+};
+
+/** 各类文件的生成开关 */
+export interface GenerateConfig {
+	/** 是否生成 +server.ts（默认 true） */
+	server?: boolean;
+	/** 是否生成 api.remote.ts（默认 true） */
+	remote?: boolean;
+	/** 是否生成 registry.server.ts（默认 true） */
+	registry?: boolean;
+	/** i18n 分组标签文件配置；false 或省略表示不生成（默认 false） */
+	messages?: false | MessagesConfig;
+}
+
+/** 默认生成配置 */
+export const DEFAULT_GENERATE_CONFIG: Required<Omit<GenerateConfig, 'messages'>> & Pick<GenerateConfig, 'messages'> = {
+	server: true,
+	remote: true,
+	registry: true,
+	messages: false,
+};
+
 /** 插件完整配置 */
 export interface ApiRoutesConfig {
 	util?: UtilConfig;
+	/** 各类文件的生成开关 */
+	generate?: GenerateConfig;
+	/** API 路由根目录（默认 'src/routes/api'） */
+	apiDir?: string;
+	/** 从 API URL 提取分组的正则字符串（默认 '/api/v[^/]+/([^/]+)'） */
+	groupPattern?: string;
 }

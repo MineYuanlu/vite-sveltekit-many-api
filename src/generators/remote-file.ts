@@ -1,4 +1,4 @@
-import { GENERATED_MARKER, ESLINT_IGNORE_ALL, REMOTE_FILE, API_NAME, LOG_PREFIX } from '../config.js';
+import { GENERATED_MARKER, ESLINT_IGNORE_ALL, REMOTE_FILE, API_NAME, LOG_PREFIX, API_ROUTES_DIR } from '../config.js';
 import { writeIfChanged, removeGeneratedFile, syncEndpointGitignore } from '../file-writer.js';
 import { getRoutePath } from '../path-utils.js';
 import { parseApiExports } from '../parser.js';
@@ -49,7 +49,7 @@ export function generateRemoteFile(apiFileName: string, methods: EndpointInfo['m
 /**
  * 处理单个 `-api.server.ts` 文件：生成 `api.remote.ts`。
  */
-export async function processRemoteFile(filePath: string): Promise<void> {
+export async function processRemoteFile(filePath: string, apiDir: string = API_ROUTES_DIR): Promise<void> {
 	const dir = path.dirname(filePath);
 	const basename = path.basename(filePath);
 
@@ -85,7 +85,7 @@ export async function processRemoteFile(filePath: string): Promise<void> {
 
 	let remoteContent: string;
 	try {
-		remoteContent = generateRemoteFile(apiFileName, methods, getRoutePath(filePath));
+		remoteContent = generateRemoteFile(apiFileName, methods, getRoutePath(filePath, apiDir));
 	} catch (err) {
 		console.error(`${LOG_PREFIX} 生成内容失败 ${filePath}:`, err);
 		return;

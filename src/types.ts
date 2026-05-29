@@ -5,8 +5,22 @@ import type { StandardSchemaV1 } from '@standard-schema/spec';
 export interface ApiMethodDef {
 	/** 端点描述（用于 OpenAPI 和 MCP） */
 	description?: string;
+	/**
+	 * 覆盖 OpenAPI / JSON schema route 使用的 input schema。
+	 * 优先级高于 zMETHOD。
+	 */
+	inputSchema?: StandardSchemaV1;
 	/** MCP 专属配置 */
 	mcp?: {
+		/** 工具分类 */
+		category?: string;
+		/** 额外数据，供 MCP 工具注册时自由扩展 */
+		extraData?: Record<string, unknown>;
+		/**
+		 * 覆盖 MCP 工具注册时使用的 input schema，优先级高于 ApiMethodDef.inputSchema。
+		 * 用于向Agent提供一个简单的类型描述，不用于强校验。
+		 */
+		inputSchema?: StandardSchemaV1;
 		/** 工具注释 */
 		annotations?: {
 			title?: string | undefined;

@@ -1,18 +1,18 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { API_ROUTES_DIR, API_NAME, DEFAULT_UTIL_CONFIG } from './config.js';
-import type { UtilConfig } from './config.js';
+import type { UtilConfig, GenerateConfig } from './config.js';
 import { processServerFile } from './generators/server-file.js';
 import { processRemoteFile } from './generators/remote-file.js';
-import { resolveRealPath } from './path-utils.js';
+import { parseApiExports } from './parser.js';
+import { resolveRealPath, getRoutePath, getApiUrlPath } from './path-utils.js';
 import type { EndpointInfo } from './types.js';
 
 /**
- * 扫描所有 `-api.server.ts` 文件并处理。
- * @returns 所有有效的端点信息
+ * 扫描所有 `-api.server.ts` 文件并返回路径列表。
  */
-export function scanAllApiFiles(): string[] {
-	const watchDir = resolveRealPath(path.resolve(API_ROUTES_DIR));
+export function scanAllApiFiles(apiDir: string = API_ROUTES_DIR): string[] {
+	const watchDir = resolveRealPath(path.resolve(apiDir));
 	if (!fs.existsSync(watchDir)) return [];
 
 	const files: string[] = [];
@@ -31,27 +31,59 @@ export function scanAllApiFiles(): string[] {
 }
 
 /**
- * 处理单个 API 文件：生成 server-file 和 remote-file。
+ * 仅解析 API 文件，不生成任何磁盘文件。
+ * 当 generate.server === false 时用于获取端点信息。
+ */
+async function parseEndpointOnly(filePath: string, apiDir: string): Promise<EndpointInfo | undefined> {
+	try {
+		const methods = await parseApiExports(filePath);
+		if (!methods.length) return undefined;
+		const routePath = getRoutePath(filePath, apiDir);
+		return { filePath, routePath, apiUrl: getApiUrlPath(routePath), methods };
+	} catch {
+		return undefined;
+	}
+}
+
+/**
+ * 处理单个 API 文件：按 generate 开关生成 server-file 和/或 remote-file。
  */
 export async function processApiFile(
 	filePath: string,
 	util: UtilConfig = DEFAULT_UTIL_CONFIG,
+	generate: Pick<GenerateConfig, 'server' | 'remote'> = {},
+	apiDir: string = API_ROUTES_DIR,
 ): Promise<EndpointInfo | undefined> {
-	// 并行生成 server 和 remote 文件
-	const [serverEp] = await Promise.all([processServerFile(filePath, util), processRemoteFile(filePath)]);
+	const generateServer = generate.server !== false;
+	const generateRemote = generate.remote !== false;
 
-	return serverEp;
+	if (generateServer) {
+		// processServerFile 负责解析 + 生成 server 文件，返回 EndpointInfo
+		const [serverEp] = await Promise.all([
+			processServerFile(filePath, util, apiDir),
+			generateRemote ? processRemoteFile(filePath, apiDir) : Promise.resolve(),
+		]);
+		return serverEp;
+	}
+
+	// server 关闭时：仅解析，不生成 server 文件；remote 独立按开关处理
+	const [ep] = await Promise.all([
+		parseEndpointOnly(filePath, apiDir),
+		generateRemote ? processRemoteFile(filePath, apiDir) : Promise.resolve(),
+	]);
+	return ep;
 }
 
 /**
  * 全量扫描并处理所有 API 文件。
  */
-export async function scanAll(util: UtilConfig = DEFAULT_UTIL_CONFIG): Promise<EndpointInfo[]> {
-	const files = scanAllApiFiles();
+export async function scanAll(
+	util: UtilConfig = DEFAULT_UTIL_CONFIG,
+	generate: Pick<GenerateConfig, 'server' | 'remote'> = {},
+	apiDir: string = API_ROUTES_DIR,
+): Promise<EndpointInfo[]> {
+	const files = scanAllApiFiles(apiDir);
 
-	// 并发处理文件，错误隔离
-	const results = await Promise.all(files.map((file) => processApiFile(file, util)));
-	const endpoints = results.filter((ep): ep is EndpointInfo => ep !== undefined);
-
-	return endpoints;
+	const results = await Promise.all(files.map((file) => processApiFile(file, util, generate, apiDir)));
+	return results.filter((ep): ep is EndpointInfo => ep !== undefined);
 }

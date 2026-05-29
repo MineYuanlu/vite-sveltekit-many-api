@@ -5,6 +5,7 @@ import {
 	usesBody,
 	LOG_PREFIX,
 	API_NAME,
+	API_ROUTES_DIR,
 	DEFAULT_UTIL_CONFIG,
 } from '../config.js';
 import type { UtilConfig } from '../config.js';
@@ -73,6 +74,7 @@ export function generateServerFile(
 export async function processServerFile(
 	filePath: string,
 	util: UtilConfig = DEFAULT_UTIL_CONFIG,
+	apiDir: string = API_ROUTES_DIR,
 ): Promise<EndpointInfo | undefined> {
 	const dir = path.dirname(filePath);
 	const basename = path.basename(filePath);
@@ -121,7 +123,7 @@ export async function processServerFile(
 
 	await syncEndpointGitignore(dir);
 
-	const routePath = getRoutePath(filePath);
+	const routePath = getRoutePath(filePath, apiDir);
 	return {
 		filePath,
 		routePath,
