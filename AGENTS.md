@@ -117,3 +117,7 @@ apiRoutes({
 - Adding a new registry generator? Update `generators/registry/index.ts`.
 - Changing generated file format? Bump the marker or handle migration — old generated files without the marker won't be touched.
 - Changing `apiDir` handling? It flows through: `index.ts` → `scanner.ts` → `processApiFile` → `processServerFile`/`processRemoteFile` → `getRoutePath(filePath, apiDir)`. Watcher also receives it directly.
+
+## Release
+
+**版本更新不要手动操作，只由 Owner 在 GitHub Actions 页面手动执行。**

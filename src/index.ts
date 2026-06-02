@@ -1,5 +1,4 @@
 import type { Plugin } from 'vite';
-import { loadConfigFromFile } from 'vite';
 import {
 	LOG_PREFIX,
 	DEFAULT_UTIL_CONFIG,
@@ -31,7 +30,7 @@ interface ResolvedConfig {
 function resolveConfig(config: ApiRoutesConfig = {}): ResolvedConfig {
 	return {
 		util: {
-			path: config.util?.path ?? DEFAULT_UTIL_CONFIG.path,
+			path: config.util?.path !== undefined ? config.util?.path : DEFAULT_UTIL_CONFIG.path,
 			imp: config.util?.imp ?? DEFAULT_UTIL_CONFIG.imp,
 			schema: config.util?.schema ?? DEFAULT_UTIL_CONFIG.schema,
 		},
@@ -92,52 +91,4 @@ export function apiRoutes(config: ApiRoutesConfig = {}): Plugin {
 			setupWatcher(server, allEndpoints, resolved.util, resolved.generate, resolved.apiDir, resolved.groupPattern);
 		},
 	};
-}
-
-async function runCli() {
-	const args = process.argv.slice(1);
-	const generateIndex = args.indexOf('generate');
-	if (generateIndex === -1) return;
-
-	const configFlagIndex = args.indexOf('--config');
-	const configFile = configFlagIndex !== -1 ? args[configFlagIndex + 1] : undefined;
-
-	console.log(`${LOG_PREFIX} CLI 模式：扫描 API 文件...`);
-
-	let pluginConfig: ApiRoutesConfig = {};
-	try {
-		const loaded = await loadConfigFromFile({ command: 'build', mode: 'production' }, configFile, process.cwd());
-		if (loaded) {
-			for (const p of loaded.config.plugins || []) {
-				const plugin = typeof p === 'function' ? (p as unknown as () => unknown)() : p;
-				if (plugin && (plugin as any).name === PLUGIN_NAME) {
-					pluginConfig = (plugin as any).__apiRoutesConfig ?? {};
-					console.log(`${LOG_PREFIX} 已从 vite 配置加载 apiRoutes 配置`);
-					break;
-				}
-			}
-		}
-	} catch (e) {
-		console.warn(`${LOG_PREFIX} 加载 vite 配置失败，使用默认配置:`, e);
-	}
-
-	const resolved = resolveConfig(pluginConfig);
-
-	await ensureUtilTemplate(resolved.util);
-	const endpoints = await scanAll(resolved.util, resolved.generate, resolved.apiDir);
-	await generateRegistryFiles(endpoints, resolved.apiDir, {
-		groupPattern: resolved.groupPattern,
-		generate: resolved.generate,
-	});
-	console.log(`${LOG_PREFIX} 生成完成`);
-}
-
-// Guard against double-invocation: loadConfigFromFile re-imports this module via ESM,
-// which would re-trigger the CLI. process.env is shared across all modules in the process.
-if (process.argv.slice(1).includes('generate') && !process.env['__API_ROUTES_CLI_RAN__']) {
-	process.env['__API_ROUTES_CLI_RAN__'] = '1';
-	runCli().catch((err) => {
-		console.error(`${LOG_PREFIX} 扫描出错:`, err);
-		process.exit(1);
-	});
 }

@@ -220,3 +220,7 @@ npm run dev
 ## License
 
 MIT
+
+## Release
+
+**Do not update versions manually. Only the Owner should trigger releases from the GitHub Actions page.**
