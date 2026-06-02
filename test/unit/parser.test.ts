@@ -130,7 +130,7 @@ export const GET = async () => 'hello';`,
 		});
 
 		it('should not detect definition when dGET is missing', async () => {
-			const file = writeApiFile(tempDir, `export const GET = async () => 'hello';`);
+			const file = writeApiFile(tempDir, "export const GET = async () => 'hello';");
 			const methods = await parseApiExports(file);
 			expect(methods[0]).toMatchObject({
 				method: 'GET',

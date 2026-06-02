@@ -147,7 +147,7 @@ export async function generateRegistryMessages(
 		lines.push(`import { ${cfg.export} } from '${cfg.from}';`);
 	}
 	lines.push('');
-	lines.push(`/** 分组标签映射，由插件自动生成，随 API 路由同步更新 */`);
+	lines.push('/** 分组标签映射，由插件自动生成，随 API 路由同步更新 */');
 	lines.push(`export const GROUP_LABELS: Record<string, () => ${cfg.returnType}> = {`);
 	for (const group of groups) {
 		lines.push(`  ${group}: ${cfg.export}['${cfg.keyPrefix}.${group}'],`);
