@@ -1,6 +1,6 @@
 {
 	"name": "@yuanlu_yl/vite-sveltekit-many-api",
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"description": "Vite plugin for SvelteKit to auto-generate many API routes from `-api.server.ts`",
 	"type": "module",
 	"bin": {
