@@ -3,6 +3,9 @@
 	"version": "0.2.1",
 	"description": "Vite plugin for SvelteKit to auto-generate many API routes from `-api.server.ts`",
 	"type": "module",
+	"bin": {
+		"many-api": "./dist/cli.cjs"
+	},
 	"main": "./dist/index.cjs",
 	"module": "./dist/index.js",
 	"types": "./dist/index.d.ts",
@@ -14,11 +17,12 @@
 		}
 	},
 	"files": [
-		"dist"
+		"dist",
+		"templates"
 	],
 	"scripts": {
-		"build": "tsup src/index.ts --format cjs,esm --dts --clean && rm -rf dist/templates && node scripts/copy-templates.cjs",
-		"dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+		"build": "tsup src/index.ts src/cli.ts --format cjs,esm --dts --clean && rm -rf dist/templates && node scripts/copy-templates.cjs",
+		"dev": "tsup src/index.ts src/cli.ts --format cjs,esm --dts --watch",
 		"test": "vitest",
 		"test:run": "vitest run",
 		"typecheck": "tsc --noEmit",

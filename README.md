@@ -220,3 +220,7 @@ npm run dev
 ## 许可证
 
 MIT
+
+## 版本发布
+
+**更新版本不要手动操作，只由 Owner 在 GitHub Actions 页面手动执行。**
